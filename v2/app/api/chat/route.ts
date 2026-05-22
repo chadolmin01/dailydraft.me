@@ -6,7 +6,7 @@ export const maxDuration = 60
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
 import { ApiResponse } from '@/src/lib/api-utils'
 import { getOrCreateWorkspace } from '@/src/lib/workspace'
-import { getAnthropic, CHAT_MODEL, SYSTEM_PROMPT } from '@/src/lib/anthropic/client'
+import { getAnthropic, CHAT_MODEL, SYSTEM_PROMPT, isAllowedChatModel } from '@/src/lib/anthropic/client'
 import { TOOL_DEFINITIONS, executeTool, type ToolContext } from '@/src/lib/anthropic/tools'
 import { consumeToken } from '@/src/lib/rate-limit'
 import type Anthropic from '@anthropic-ai/sdk'
@@ -40,9 +40,16 @@ export async function POST(request: NextRequest) {
     return ApiResponse.rateLimited('잠시 후 다시 시도해 주세요. 1분에 20개까지 메시지를 보낼 수 있습니다.')
   }
 
-  const body = (await request.json().catch(() => ({}))) as { message?: string; folder_id?: string }
+  const body = (await request.json().catch(() => ({}))) as {
+    message?: string
+    folder_id?: string
+    model?: string
+  }
   const message = body.message?.trim()
   if (!message) return ApiResponse.badRequest('message 가 필요합니다')
+
+  // 사용자가 picker 로 모델 override 한 경우 검증 후 사용. 미지정/오타면 기본값.
+  const chosenModel = body.model && isAllowedChatModel(body.model) ? body.model : CHAT_MODEL
 
   const workspace = await getOrCreateWorkspace(supabase, user.id)
   const folderId = body.folder_id ?? null
@@ -88,7 +95,7 @@ export async function POST(request: NextRequest) {
   let response: Anthropic.Message
   try {
     response = await client.messages.create({
-      model: CHAT_MODEL,
+      model: chosenModel,
       max_tokens: 4096,
       system: SYSTEM_PROMPT,
       tools: TOOL_DEFINITIONS as unknown as Anthropic.Tool[],
@@ -156,7 +163,7 @@ export async function POST(request: NextRequest) {
 
     try {
       response = await client.messages.create({
-        model: CHAT_MODEL,
+        model: chosenModel,
         max_tokens: 4096,
         system: SYSTEM_PROMPT,
         tools: TOOL_DEFINITIONS as unknown as Anthropic.Tool[],

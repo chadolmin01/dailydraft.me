@@ -3,13 +3,14 @@
 import { useEffect, useRef } from 'react'
 import { ArrowUp, Square } from 'lucide-react'
 import { IconButton } from './IconButton'
+import { ModelPicker } from './ModelPicker'
+import { CHAT_MODELS } from '@/src/lib/anthropic/client'
 
 /**
- * 채팅 입력창 (라이트). pill 형태, send 버튼 우측 임베드.
+ * 채팅 입력창 (라이트). Cursor 스타일 — pill + send 임베드 + 아래 모델 picker.
  * - Enter 전송, Shift+Enter 줄바꿈, IME 조합 중 Enter 무시
- * - 자동 높이 (최대 7줄)
+ * - 자동 높이 (최대 7줄), 정상 글자 높이에 맞춰 vertical padding 슬림화
  * - send pending 중 → stop 버튼으로 전환
- * - 4000자 초과 표시
  */
 
 interface ChatInputProps {
@@ -20,6 +21,8 @@ interface ChatInputProps {
   pending: boolean
   disabled: boolean
   placeholder: string
+  selectedModel: string
+  onChangeModel: (id: string) => void
 }
 
 const MAX_LEN = 4000
@@ -32,20 +35,20 @@ export function ChatInput({
   pending,
   disabled,
   placeholder,
+  selectedModel,
+  onChangeModel,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // 입력 길이 변경 시 자동 높이 — 최대 7줄.
   useEffect(() => {
     const ta = textareaRef.current
     if (!ta) return
     ta.style.height = 'auto'
-    const max = parseFloat(getComputedStyle(ta).lineHeight) * 7 + 16
+    const max = parseFloat(getComputedStyle(ta).lineHeight) * 7 + 12
     ta.style.height = `${Math.min(ta.scrollHeight, max)}px`
   }, [value])
 
   // "/" 단축키로 챗 입력에 포커스 — GitHub/Slack 스타일.
-  // 의도: 매니저가 매트릭스/폴더 보다가 즉시 질문 입력. 입력 중인 다른 input/textarea 안에서는 무시.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return
@@ -70,9 +73,11 @@ export function ChatInput({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="px-4 pb-4 pt-3 border-t border-hairline">
+    <form onSubmit={handleSubmit} className="px-4 pb-3 pt-2 border-t border-hairline">
+      {/* pill: 슬림화 — px-3 py-1 (이전 py-2) + textarea py-1 (이전 py-1.5).
+          글씨 높이에 맞춰 컴팩트. */}
       <div
-        className={`relative flex items-end gap-2 rounded-3xl border bg-canvas px-3 py-2 transition-colors shadow-sm ${
+        className={`relative flex items-end gap-2 rounded-2xl border bg-canvas px-3 py-1 transition-colors shadow-sm ${
           overLimit ? 'border-muted' : 'border-hairline focus-within:border-ink'
         }`}
       >
@@ -90,41 +95,45 @@ export function ChatInput({
           rows={1}
           maxLength={MAX_LEN + 200}
           disabled={disabled && !pending}
-          className="flex-1 bg-transparent border-none outline-none resize-none text-body-md text-ink placeholder:text-muted-soft disabled:opacity-50 py-1.5 px-1 max-h-48 overflow-y-auto scrollbar-hide"
+          className="flex-1 bg-transparent border-none outline-none resize-none text-body-md text-ink placeholder:text-muted-soft disabled:opacity-50 py-1 px-1 max-h-48 overflow-y-auto scrollbar-hide leading-snug"
         />
         {pending && onCancel ? (
           <IconButton
             variant="solid"
-            size="md"
+            size="sm"
             label="응답 중단"
             onClick={onCancel}
             className="mb-0.5"
           >
-            <Square size={14} strokeWidth={2.5} fill="currentColor" />
+            <Square size={12} strokeWidth={2.5} fill="currentColor" />
           </IconButton>
         ) : (
           <IconButton
             variant="solid"
-            size="md"
+            size="sm"
             label="보내기"
             type="submit"
             disabled={!canSend || overLimit}
             className="mb-0.5"
           >
-            <ArrowUp size={16} strokeWidth={2.5} />
+            <ArrowUp size={14} strokeWidth={2.5} />
           </IconButton>
         )}
       </div>
-      <div className="flex items-center justify-between mt-2 px-2 text-caption text-muted-soft">
-        <span className="opacity-70">
-          Enter 로 보내기 · Shift+Enter 줄바꿈 ·{' '}
-          <kbd className="px-1 py-0.5 rounded bg-surface-card text-ink/80 text-[10px] font-mono">/</kbd> 로 입력 포커스
-        </span>
-        {value.length > 200 ? (
-          <span className={`tabular ${overLimit ? 'text-ink' : 'opacity-70'}`}>
-            {value.length} / {MAX_LEN}
+      {/* Cursor 스타일 하단 줄: 모델 picker (좌) + 단축키 + 글자수 (우) */}
+      <div className="flex items-center justify-between mt-1.5 px-1 text-caption text-muted-soft">
+        <ModelPicker models={CHAT_MODELS} value={selectedModel} onChange={onChangeModel} />
+        <span className="flex items-center gap-2 opacity-70">
+          {value.length > 200 ? (
+            <span className={`tabular ${overLimit ? 'text-ink' : ''}`}>
+              {value.length} / {MAX_LEN}
+            </span>
+          ) : null}
+          <span>
+            <kbd className="px-1 rounded bg-surface-card text-ink/80 text-[10px] font-mono">/</kbd>{' '}
+            포커스 · <kbd className="px-1 rounded bg-surface-card text-ink/80 text-[10px] font-mono">⏎</kbd> 전송
           </span>
-        ) : null}
+        </span>
       </div>
     </form>
   )

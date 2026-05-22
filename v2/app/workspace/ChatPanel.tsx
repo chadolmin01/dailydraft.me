@@ -16,6 +16,9 @@ import { MessageBubble } from './chat/MessageBubble'
 import { TypingIndicator } from './chat/TypingIndicator'
 import { EmailDraftCard, extractEmailDrafts } from './chat/EmailDraftCard'
 import { AtomResultCard, extractAtomResults } from './chat/AtomResultCard'
+import { CHAT_MODELS } from '@/src/lib/anthropic/client'
+
+const MODEL_STORAGE_KEY = 'draft-chat-model'
 import { SuggestionCard } from './chat/SuggestionCard'
 import { ChipButton } from './chat/ChipButton'
 import { IconButton } from './chat/IconButton'
@@ -100,6 +103,18 @@ export function ChatPanel({ folderId, folderName }: Props) {
   const [showScrollDown, setShowScrollDown] = useState(false)
   const [lastUserMessage, setLastUserMessage] = useState<string | null>(null)
 
+  // 모델 선택 — localStorage 에 persist. 최초엔 기본 Sonnet 4.6.
+  const [selectedModel, setSelectedModel] = useState<string>(CHAT_MODELS[1].id)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const saved = window.localStorage.getItem(MODEL_STORAGE_KEY)
+    if (saved && CHAT_MODELS.some(m => m.id === saved)) setSelectedModel(saved)
+  }, [])
+  const handleChangeModel = (id: string) => {
+    setSelectedModel(id)
+    try { window.localStorage.setItem(MODEL_STORAGE_KEY, id) } catch {}
+  }
+
   const history = useQuery({
     queryKey: ['chat-history'],
     queryFn: async (): Promise<{ rows: ChatRow[] }> => {
@@ -135,7 +150,7 @@ export function ChatPanel({ folderId, folderName }: Props) {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, folder_id: folderId }),
+        body: JSON.stringify({ message, folder_id: folderId, model: selectedModel }),
         signal: ctrl.signal,
       })
       if (!res.ok) {
@@ -463,6 +478,8 @@ export function ChatPanel({ folderId, folderName }: Props) {
         pending={send.isPending}
         disabled={false}
         placeholder={folderId ? '메시지를 입력하세요' : '폴더 없이도 일반 대화는 가능합니다'}
+        selectedModel={selectedModel}
+        onChangeModel={handleChangeModel}
       />
     </div>
   )

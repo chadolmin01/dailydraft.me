@@ -9,8 +9,34 @@ export function getAnthropic(): Anthropic {
   return client
 }
 
-// V1 모델: Claude Sonnet 4.6 (도구 사용 성능 + 비용 균형). 4.7 도 가능하지만 V1 비용 우선.
+// V1 기본 모델: Claude Sonnet 4.6 (도구 사용 성능 + 비용 균형). 사용자가 모델 picker 로 override 가능.
 export const CHAT_MODEL = 'claude-sonnet-4-5-20250929'
+
+// 챗 입력 picker 에 노출할 모델 목록 + 한국어 라벨 + 가격 힌트.
+// 의도: 매니저가 답변 품질 / 비용 / 가용성 trade-off 를 즉시 선택.
+export const CHAT_MODELS = [
+  {
+    id: 'claude-haiku-4-5-20251001',
+    label: 'Haiku 4.5',
+    hint: '빠름·저렴',
+  },
+  {
+    id: 'claude-sonnet-4-5-20250929',
+    label: 'Sonnet 4.6',
+    hint: '균형 (기본)',
+  },
+  {
+    id: 'claude-opus-4-7',
+    label: 'Opus 4.7',
+    hint: '품질·고비용',
+  },
+] as const
+
+export type ChatModelId = (typeof CHAT_MODELS)[number]['id']
+
+export function isAllowedChatModel(id: string): id is ChatModelId {
+  return (CHAT_MODELS as readonly { id: string }[]).some(m => m.id === id)
+}
 
 // CLAUDE.md Hard Rules 반영:
 //   - 한국어 존댓말 ("~합니다", "~해주세요")

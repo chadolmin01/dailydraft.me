@@ -316,8 +316,8 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
         className="bg-canvas text-ink border-b md:border-b-0 md:border-r border-hairline flex flex-col md:h-screen max-h-[60vh] md:max-h-none"
         aria-label="챗봇"
       >
-        <header className="px-4 py-3 border-b border-hairline flex items-center justify-between gap-2">
-          <h2 className="text-title-md text-ink truncate min-w-0">
+        <header className="px-4 py-2 border-b border-hairline flex items-center justify-between gap-2">
+          <h2 className="text-title-md text-ink truncate min-w-0 leading-tight">
             {foldersQuery.data?.workspace.name ?? 'Draft'}
           </h2>
           <OverflowMenu label="계정과 대화 메뉴" items={menuItems} />
@@ -326,9 +326,9 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
         <ChatPanel folderId={selectedFolderId} folderName={selectedFolder?.name} />
       </aside>
 
-      {/* 우측 (모바일에서는 하단) — 콘텐츠 (cream) */}
-      <main id="workspace-main" className="overflow-y-auto p-4 md:p-6 md:h-screen" aria-label="폴더와 진행도">
-        <div className="max-w-layout-content mx-auto space-y-7">
+      {/* 우측 (모바일에서는 하단) — 콘텐츠 (cream). 위아래 여백 슬림. */}
+      <main id="workspace-main" className="overflow-y-auto px-4 md:px-6 pt-3 md:pt-4 pb-6 md:h-screen" aria-label="폴더와 진행도">
+        <div className="max-w-layout-content mx-auto space-y-5">
           {googleAuthBroken ? (
             <div className="rounded-lg border border-hairline bg-surface-soft p-5 flex items-start justify-between gap-4">
               <div>
