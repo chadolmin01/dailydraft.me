@@ -19,6 +19,7 @@ import { DrivePickerButton } from './DrivePickerButton'
 import { ChatPanel } from './ChatPanel'
 import { FolderBrowser } from './FolderBrowser'
 import { OverflowMenu, type MenuItem } from './chat/OverflowMenu'
+import { TaskKanban } from './TaskKanban'
 
 interface Folder {
   id: string
@@ -451,24 +452,22 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
-          {/* 진행 상황 탭 — 오늘의 활동 + 다가오는 마감을 한 곳에 */}
-          {folderTab === 'activity' && folders.length > 0 ? (
-            <div className="grid md:grid-cols-2 gap-4">
-              <TodaysActivity
-                folderIds={folders.map(f => f.id)}
-                folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))}
-              />
-              <UpcomingDeadlines
-                folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))}
-              />
+          {/* 진행 상황 탭 — Kanban (업무) + 오늘의 활동 + 다가오는 마감 */}
+          {folderTab === 'activity' ? (
+            <div className="space-y-5">
+              <TaskKanban folders={folders.map(f => ({ id: f.id, name: f.name }))} />
+              {folders.length > 0 ? (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <TodaysActivity
+                    folderIds={folders.map(f => f.id)}
+                    folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))}
+                  />
+                  <UpcomingDeadlines
+                    folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))}
+                  />
+                </div>
+              ) : null}
             </div>
-          ) : null}
-
-          {/* 진행 상황 탭 — 둘 다 비어있을 때 안내 */}
-          {folderTab === 'activity' && folders.length === 0 ? (
-            <p className="text-body-sm text-muted">
-              연결된 폴더가 없습니다. 먼저 폴더를 연결해 주세요.
-            </p>
           ) : null}
 
           {selectedFolder?.drive_folder_id ? (
