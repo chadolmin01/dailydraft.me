@@ -138,7 +138,11 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
 
   // 일괄 처리 — 현재 화면의 처리 가능 + 아직 안 된 파일을 순차로 트리거.
   // 의도: Vercel 60s 한계 + LLM 동시 호출 비용 절감 → 직렬 (사용자가 진행률 봄).
-  const [bulkPending, setBulkPending] = useState<{ total: number; done: number } | null>(null)
+  const [bulkPending, setBulkPending] = useState<{
+    total: number
+    done: number
+    current: string | null
+  } | null>(null)
   const runBulkProcess = async () => {
     const targets = (query.data?.files ?? []).filter(
       (f) =>
@@ -146,15 +150,15 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
         !processedMap.get(f.id)?.parsing_completed_at,
     )
     if (targets.length === 0) return
-    setBulkPending({ total: targets.length, done: 0 })
+    setBulkPending({ total: targets.length, done: 0, current: targets[0].name })
     for (let i = 0; i < targets.length; i++) {
       const file = targets[i]
+      setBulkPending({ total: targets.length, done: i, current: file.name })
       try {
         await processMutation.mutateAsync(file)
       } catch {
         // 개별 실패는 무시하고 다음 파일로 — 결과는 처리 컬럼에 표시됨.
       }
-      setBulkPending({ total: targets.length, done: i + 1 })
     }
     setBulkPending(null)
   }
@@ -182,9 +186,15 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
         <Breadcrumb path={path} onJump={jumpTo} />
         <div className="flex items-center gap-3 shrink-0">
           {bulkPending ? (
-            <span className="text-caption text-muted tabular inline-flex items-center gap-1.5">
-              <Loader2 className="w-3 h-3 animate-spin" />
-              처리 중 {bulkPending.done} / {bulkPending.total}
+            <span
+              className="text-caption text-muted tabular inline-flex items-center gap-1.5 max-w-xs min-w-0"
+              title={bulkPending.current ?? undefined}
+            >
+              <Loader2 className="w-3 h-3 animate-spin shrink-0" />
+              <span className="shrink-0">{bulkPending.done} / {bulkPending.total}</span>
+              {bulkPending.current ? (
+                <span className="truncate text-muted-soft">· {bulkPending.current}</span>
+              ) : null}
             </span>
           ) : unprocessedCount > 0 ? (
             <button
