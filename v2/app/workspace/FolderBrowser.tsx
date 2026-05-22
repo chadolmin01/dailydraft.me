@@ -61,6 +61,7 @@ interface ProcessedFile {
 
 export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) {
   const qc = useQueryClient()
+  const [viewerFileId, setViewerFileId] = useState<string | null>(null)
   const [path, setPath] = useState<PathSegment[]>([
     { id: rootDriveFolderId, name: rootName },
   ])
@@ -229,6 +230,7 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
                       processed={processedMap.get(item.id)}
                       mimeType={item.mimeType}
                       onProcess={() => processMutation.mutate(item)}
+                      onView={(pid) => setViewerFileId(pid)}
                       pending={processMutation.isPending && processMutation.variables?.id === item.id}
                     />
                     <span className="hidden md:block text-body-sm text-muted-soft text-right tabular">
@@ -240,6 +242,17 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
             ))}
           </ul>
         </div>
+      ) : null}
+
+      {viewerFileId ? (
+        <AtomViewer
+          processedFileId={viewerFileId}
+          onClose={() => setViewerFileId(null)}
+          onReprocess={(file) => {
+            processMutation.mutate(file)
+            setViewerFileId(null)
+          }}
+        />
       ) : null}
     </div>
   )
@@ -364,14 +377,15 @@ function ProcessCell({
   processed,
   mimeType,
   onProcess,
+  onView,
   pending,
 }: {
   processed: ProcessedFile | undefined
   mimeType: string
   onProcess: () => void
+  onView: (id: string) => void
   pending: boolean
 }) {
-  // 처리 가능한 mime 가 아니면 표시 안 함
   if (!PROCESSABLE_MIMES.has(mimeType)) {
     return <span className="hidden md:block text-caption text-muted-soft">—</span>
   }
@@ -385,7 +399,6 @@ function ProcessCell({
     )
   }
 
-  // 이미 처리됨 — 에러였는지, 성공이었는지
   if (processed?.parsing_completed_at) {
     if (processed.parsing_error) {
       return (
@@ -403,8 +416,8 @@ function ProcessCell({
     return (
       <button
         type="button"
-        onClick={onProcess}
-        title="다시 처리 (새 결과로 덮어쓰기)"
+        onClick={() => onView(processed.id)}
+        title="Atom 상세 보기"
         className="hidden md:inline-flex items-center gap-1.5 text-caption text-ink hover:opacity-70 transition-opacity"
       >
         <CheckCircle2 className="w-3 h-3" />
@@ -413,7 +426,6 @@ function ProcessCell({
     )
   }
 
-  // 아직 처리 안 됨
   return (
     <button
       type="button"
@@ -423,5 +435,185 @@ function ProcessCell({
       <Sparkles className="w-3 h-3" />
       처리
     </button>
+  )
+}
+
+interface AtomDetail {
+  id: string
+  local_id: string
+  type: string
+  content: string
+  attributes: Record<string, unknown>
+  provenance: {
+    source?: { file_id?: string; location?: string; raw_text?: string }
+    extracted_by?: { model?: string; extractor_version?: string; extracted_at?: string }
+  }
+  confidence: number
+}
+
+interface RelationDetail {
+  id: string
+  from_atom_id: string
+  to_atom_id: string
+  type: string
+  confidence: number
+}
+
+interface ViewerResponse {
+  file: ProcessedFile & { drive_modified_at: string | null; size_bytes: number | null }
+  atoms: AtomDetail[]
+  relations: RelationDetail[]
+}
+
+const ATOM_TYPE_LABELS: Record<string, string> = {
+  Requirement: '요구사항',
+  Deadline: '마감',
+  Constraint: '제약',
+  Deliverable: '산출물',
+  Metric: '수치',
+  Narrative: '서술',
+  Event: '이벤트',
+  Question: '질문',
+  Decision: '결정',
+  Reference: '참조',
+  Definition: '정의',
+  Entity: '주체',
+}
+
+function AtomViewer({
+  processedFileId,
+  onClose,
+  onReprocess,
+}: {
+  processedFileId: string
+  onClose: () => void
+  onReprocess: (file: { id: string; name: string; mimeType: string; size?: string; modifiedTime: string }) => void
+}) {
+  const query = useQuery({
+    queryKey: ['processed-file-detail', processedFileId],
+    queryFn: async (): Promise<ViewerResponse> => {
+      const res = await fetch(`/api/files/process/${processedFileId}`)
+      if (!res.ok) throw new Error('상세 조회 실패')
+      return res.json()
+    },
+  })
+
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onEsc)
+    return () => window.removeEventListener('keydown', onEsc)
+  }, [onClose])
+
+  const grouped = (() => {
+    const map = new Map<string, AtomDetail[]>()
+    for (const a of query.data?.atoms ?? []) {
+      const arr = map.get(a.type) ?? []
+      arr.push(a)
+      map.set(a.type, arr)
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length)
+  })()
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Atom 상세"
+      onClick={onClose}
+      className="fixed inset-0 bg-ink/30 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col bg-canvas rounded-lg border border-hairline shadow-lg"
+      >
+        <header className="px-6 py-4 border-b border-hairline flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-title-lg text-ink truncate">
+              {query.data?.file.filename ?? '불러오는 중…'}
+            </h3>
+            {query.data?.file ? (
+              <p className="text-caption text-muted-soft mt-1">
+                Atom {query.data.file.atom_count} · Relation {query.data.file.relation_count}
+                {query.data.file.parsing_completed_at
+                  ? ` · 처리 ${new Date(query.data.file.parsing_completed_at).toLocaleString('ko-KR')}`
+                  : ''}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {query.data?.file ? (
+              <button
+                type="button"
+                onClick={() =>
+                  onReprocess({
+                    id: query.data!.file.drive_file_id,
+                    name: query.data!.file.filename,
+                    mimeType: query.data!.file.mime_type,
+                    size: query.data!.file.size_bytes?.toString(),
+                    modifiedTime:
+                      query.data!.file.drive_modified_at ??
+                      new Date().toISOString(),
+                  })
+                }
+                className="text-caption text-muted hover:text-ink transition-colors"
+              >
+                다시 처리
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-caption text-muted hover:text-ink transition-colors"
+            >
+              닫기
+            </button>
+          </div>
+        </header>
+
+        <div className="overflow-y-auto px-6 py-5 space-y-6">
+          {query.isLoading ? (
+            <p className="text-body-sm text-muted-soft">불러오는 중…</p>
+          ) : null}
+
+          {query.data && query.data.atoms.length === 0 ? (
+            <p className="text-body-sm text-muted">
+              추출된 Atom 이 없습니다.
+              {query.data.file.parsing_error ? ` (${query.data.file.parsing_error})` : ''}
+            </p>
+          ) : null}
+
+          {grouped.map(([type, atoms]) => (
+            <section key={type} className="space-y-2">
+              <h4 className="text-title-sm text-ink flex items-baseline gap-2">
+                <span>{ATOM_TYPE_LABELS[type] ?? type}</span>
+                <span className="text-caption text-muted-soft tabular">{atoms.length}</span>
+              </h4>
+              <ul className="space-y-2">
+                {atoms.map(a => (
+                  <li key={a.id} className="rounded-md border border-hairline bg-surface-soft p-3 space-y-1.5">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <p className="text-body-sm text-ink flex-1">{a.content}</p>
+                      <span className="text-caption text-muted-soft tabular shrink-0">
+                        {Math.round(a.confidence * 100)}%
+                      </span>
+                    </div>
+                    {a.provenance.source?.raw_text ? (
+                      <p className="text-caption text-muted-soft border-l-2 border-hairline pl-2 italic">
+                        “{a.provenance.source.raw_text}”
+                      </p>
+                    ) : null}
+                    {a.provenance.source?.location ? (
+                      <p className="text-caption text-muted-soft">{a.provenance.source.location}</p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
