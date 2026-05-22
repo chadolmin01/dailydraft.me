@@ -973,7 +973,7 @@ function FolderTabs({
   const folderName = folder.name
   const rootDriveFolderId = folder.drive_folder_id!
   const [editing, setEditing] = useState(false)
-  const [tab, setTab] = useState<'folder' | 'matrix'>('folder')
+  const [tab, setTab] = useState<'folder' | 'matrix' | 'atoms'>('folder')
   const matrix = matrixQuery.data?.matrix
   const hasMatrixData = !!matrix && matrix.source.fileCount > 0
   const unmatchedCount = matrixQuery.data?.matrix.source.unmatchedCount ?? 0
@@ -1009,6 +1009,9 @@ function FolderTabs({
             hint={matrixHint}
           >
             진행도
+          </TabButton>
+          <TabButton active={tab === 'atoms'} onClick={() => setTab('atoms')}>
+            내용 요약
           </TabButton>
         </div>
       </div>
@@ -1083,6 +1086,12 @@ function FolderTabs({
       {tab === 'matrix' && matrixQuery.isLoading ? <MatrixSkeleton /> : null}
       {tab === 'matrix' && matrixQuery.isError ? (
         <p className="text-body-sm text-muted">진행도를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
+      ) : null}
+
+      {tab === 'atoms' ? (
+        <div role="tabpanel">
+          <AtomDigest folderId={folder.id} folderName={folder.name} />
+        </div>
       ) : null}
     </section>
   )
@@ -1585,5 +1594,168 @@ function Cell({ cell }: { cell?: MatrixCell }) {
     )
   }
   return <span className="progress-cell progress-cell--empty" aria-label="비어 있음">○</span>
+}
+
+// ── Atom 요약 탭 ──────────────────────────────────────────────────────────
+// 의도: 매니저가 폴더 안의 처리된 파일들에서 추출된 핵심 항목 (마감/결정/요구사항/수치)
+// 을 클릭 없이 한 화면에 보기. 파일 하나하나 안 열고도 운영 흐름 파악.
+
+interface AtomRow {
+  id: string
+  local_id: string
+  type: string
+  content: string
+  attributes: Record<string, unknown>
+  provenance: { source?: { raw_text?: string; location?: string } }
+  confidence: number
+  processed_file_id: string
+  processed_files: { id: string; filename: string; folder_id: string }
+}
+
+interface AtomDigestResponse {
+  count: number
+  filter: { type: string | null; keyword: string | null; folder_id: string | null }
+  atoms: Array<{
+    local_id: string
+    type: string
+    content: string
+    confidence: number
+    attributes: Record<string, unknown>
+    raw_text: string | null
+    location: string | null
+    from_file: { processed_file_id: string; filename: string; folder_id: string }
+  }>
+}
+
+const ATOM_LABEL: Record<string, string> = {
+  Requirement: '요구사항', Deadline: '마감', Constraint: '제약',
+  Deliverable: '산출물', Metric: '수치', Narrative: '서술',
+  Event: '이벤트', Question: '질문', Decision: '결정',
+  Reference: '참조', Definition: '정의', Entity: '주체',
+}
+
+function useFolderAtoms(folderId: string, type: string | null) {
+  return useQuery({
+    queryKey: ['folder-atoms', folderId, type],
+    queryFn: async (): Promise<AtomDigestResponse> => {
+      const params = new URLSearchParams({ folder_id: folderId, limit: '50' })
+      if (type) params.set('type', type)
+      const res = await fetch(`/api/atoms/search?${params}`)
+      if (!res.ok) throw new Error('atom 조회 실패')
+      return res.json()
+    },
+    staleTime: 30_000,
+  })
+}
+
+function AtomDigest({ folderId, folderName }: { folderId: string; folderName: string }) {
+  const [filterType, setFilterType] = useState<string | null>(null)
+  const q = useFolderAtoms(folderId, filterType)
+
+  const counts = useQuery({
+    queryKey: ['folder-atom-counts', folderId],
+    queryFn: async (): Promise<{ counts: Record<string, number>; total: number; processed_files: number }> => {
+      const res = await fetch(`/api/atoms/counts?folder_id=${folderId}`)
+      if (!res.ok) throw new Error('카운트 조회 실패')
+      return res.json()
+    },
+    staleTime: 30_000,
+  })
+
+  if (counts.data?.processed_files === 0) {
+    return (
+      <div className="rounded-lg border border-hairline bg-surface-soft p-6 text-center space-y-2">
+        <p className="text-body-md text-ink">아직 처리된 파일이 없습니다.</p>
+        <p className="text-body-sm text-muted">
+          폴더 탭에서 파일 옆 <span className="text-ink">[✨ 처리]</span> 버튼을 누르거나
+          <span className="text-ink"> [안 된 N개 모두 처리]</span> 로 일괄 추출하세요.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-baseline justify-between gap-3 flex-wrap">
+        <p className="text-body-sm text-muted">
+          {folderName} · 처리된 파일 {counts.data?.processed_files ?? '…'}개 ·
+          총 {counts.data?.total ?? '…'} 항목
+        </p>
+      </div>
+
+      {/* 타입별 카운트 chip — 클릭하면 필터 */}
+      <div className="flex flex-wrap gap-1.5">
+        <AtomChip active={filterType === null} onClick={() => setFilterType(null)}>
+          전체 {counts.data?.total ?? 0}
+        </AtomChip>
+        {counts.data
+          ? Object.entries(counts.data.counts)
+              .sort((a, b) => b[1] - a[1])
+              .map(([type, n]) => (
+                <AtomChip
+                  key={type}
+                  active={filterType === type}
+                  onClick={() => setFilterType(filterType === type ? null : type)}
+                >
+                  {ATOM_LABEL[type] ?? type} {n}
+                </AtomChip>
+              ))
+          : null}
+      </div>
+
+      {/* 항목 리스트 */}
+      {q.isLoading ? (
+        <p className="text-body-sm text-muted-soft">불러오는 중…</p>
+      ) : null}
+
+      {q.data && q.data.atoms.length === 0 ? (
+        <p className="text-body-sm text-muted">해당 조건의 항목이 없습니다.</p>
+      ) : null}
+
+      <ul className="divide-y divide-hairline-soft rounded-lg border border-hairline bg-canvas">
+        {q.data?.atoms.map((a) => (
+          <li key={`${a.from_file.processed_file_id}-${a.local_id}`} className="px-4 py-3 space-y-1">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-caption text-muted-soft tabular shrink-0">
+                {ATOM_LABEL[a.type] ?? a.type}
+              </span>
+              <span className="text-body-sm text-ink flex-1 min-w-0">{a.content}</span>
+              <span className="text-caption text-muted-soft tabular shrink-0">
+                {Math.round(a.confidence * 100)}%
+              </span>
+            </div>
+            <p className="text-caption text-muted-soft truncate">
+              {a.from_file.filename}
+              {a.location ? ` · ${a.location}` : ''}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function AtomChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-caption px-2.5 py-1 rounded-full border transition-colors tabular ${
+        active
+          ? 'bg-ink text-canvas border-ink'
+          : 'text-muted border-hairline hover:text-ink hover:border-muted hover:bg-surface-soft'
+      }`}
+    >
+      {children}
+    </button>
+  )
 }
 
