@@ -44,6 +44,27 @@ export function SettingsClient({ email }: Props) {
     }
   }
 
+  // 수동 동기화 — 매니저가 cron 안 기다리고 즉시 처리하고 싶을 때.
+  const [syncing, setSyncing] = useState(false)
+  const [syncResult, setSyncResult] = useState<string | null>(null)
+  const runSync = async () => {
+    setSyncing(true)
+    setSyncResult(null)
+    try {
+      const res = await fetch('/api/sync/drive', { method: 'POST' })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error?.message ?? '동기화 실패')
+      }
+      const data = (await res.json()) as { processed_total: number; folders_seen: number }
+      setSyncResult(`${data.folders_seen}개 폴더 확인 · ${data.processed_total}개 파일 처리 완료`)
+    } catch (e) {
+      setSyncResult((e as Error).message)
+    } finally {
+      setSyncing(false)
+    }
+  }
+
   const handleDelete = async () => {
     const phrase = '삭제'
     const typed = window.prompt(
@@ -131,6 +152,26 @@ export function SettingsClient({ email }: Props) {
           >
             JSON 다운로드
           </a>
+        </section>
+
+        <section className="rounded-lg border border-hairline bg-canvas p-6 space-y-3">
+          <h2 className="text-title-lg text-ink">Drive 동기화</h2>
+          <p className="text-body-sm text-muted">
+            연결된 폴더의 새 파일을 즉시 확인하고 항목(마감·요구사항 등)을 추출합니다.
+            자동 동기화는 15분마다 실행되며, 이 버튼은 그 사이 수동 트리거 용도입니다.
+            한 번에 최대 3개 파일까지 처리합니다.
+          </p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={runSync}
+              disabled={syncing}
+              className="h-10 px-4 rounded-md bg-ink text-canvas text-button font-medium hover:bg-body-strong transition-colors disabled:opacity-50"
+            >
+              {syncing ? '동기화 중…' : '지금 동기화'}
+            </button>
+            {syncResult ? <p className="text-body-sm text-muted">{syncResult}</p> : null}
+          </div>
         </section>
 
         <section className="rounded-lg border border-hairline bg-canvas p-6 space-y-3">
