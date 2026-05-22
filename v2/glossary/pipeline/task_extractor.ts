@@ -13,6 +13,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenAI } from '@google/genai'
 import { ATOM_TYPES, RELATION_TYPES, type AtomType, type RelationType } from '../glossary'
 
 // System prompt 인라인 — Next.js 서버리스 번들에서 readFileSync 의존 회피.
@@ -109,8 +110,9 @@ const EXTRACTION_INSTRUCTIONS = `
 - Question: 불확실하거나 외부 의존 요청 (예: "○○에서 ... 가능할지 문의") = Question. asker_ref / addressee_ref attributes 함께.
 `
 
-export const TASK_EXTRACTOR_VERSION = 'm6-task-extractor-v1.0'
+export const TASK_EXTRACTOR_VERSION = 'm6-task-extractor-v1.1-multiprovider'
 export const DEFAULT_MODEL = 'claude-haiku-4-5-20251001'
+export const FALLBACK_MODEL = 'gemini-2.5-flash'
 
 export interface ExtractedAtom {
   id: string
@@ -165,11 +167,13 @@ export async function extractFromText(
 
 ${text}`
 
-  // 의도: Anthropic 529 (overloaded) / 5xx 일시 오류를 최대 3회 재시도 (지수 백오프 2/5/10s).
-  //       처음엔 1회만 재시도였는데 Anthropic 과부하가 길게 지속될 때 그대로 영구실패로 떨어지는 사고.
-  //       4xx (잘못된 요청 등) 는 재시도 안 함.
-  //       Vercel maxDuration=60s 범위 안에 들도록 합계 백오프 ~17s 가드.
-  const callOnce = () =>
+  // 의도: Anthropic 529 (overloaded) 일시 오류 → 2회 재시도 (2/5s).
+  //       그래도 막히면 Gemini Flash 로 fallback (별도 capacity pool, Anthropic 다운돼도 살아있음).
+  //       4xx (잘못된 요청 등) 는 재시도/fallback 안 함.
+  let rawText: string
+  let actualModel = model
+
+  const callAnthropic = () =>
     client.messages.create({
       model,
       max_tokens: 8192,
@@ -183,33 +187,62 @@ ${text}`
       messages: [{ role: 'user', content: userMessage }],
     })
 
-  const backoffs = [2000, 5000, 10000]
-  let response: Awaited<ReturnType<typeof callOnce>> | undefined
+  const backoffs = [2000, 5000]
+  let anthropicResp: Awaited<ReturnType<typeof callAnthropic>> | undefined
   let lastError: Error | undefined
   for (let attempt = 0; attempt <= backoffs.length; attempt++) {
     try {
-      response = await callOnce()
+      anthropicResp = await callAnthropic()
       break
     } catch (e) {
       lastError = e as Error
       const msg = lastError.message
-      const isRetryable = /\b(429|529|500|502|503|504)\b/.test(msg) || /overloaded/i.test(msg)
-      if (!isRetryable || attempt === backoffs.length) {
-        // 사용자 친화적 메시지로 wrap — UI 가 "API 일시 과부하" 라고 표시 가능
-        if (/overloaded/i.test(msg) || /\b529\b/.test(msg)) {
-          throw new Error('Anthropic API 일시 과부하 (재시도 3회 모두 실패). 잠시 후 다시 시도해 주세요.')
-        }
-        throw lastError
-      }
+      const isOverloaded = /overloaded/i.test(msg) || /\b529\b/.test(msg)
+      const isRetryable = isOverloaded || /\b(429|500|502|503|504)\b/.test(msg)
+      if (!isRetryable) throw lastError
+      if (attempt === backoffs.length) break // fallback 으로
       await new Promise(r => setTimeout(r, backoffs[attempt] + Math.random() * 500))
     }
   }
-  if (!response) throw lastError ?? new Error('extractor: response 없음')
 
-  const rawText = response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-    .map(b => b.text)
-    .join('')
+  if (anthropicResp) {
+    rawText = anthropicResp.content
+      .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+      .map(b => b.text)
+      .join('')
+  } else {
+    // Anthropic 막힘 → Gemini fallback. GEMINI_API_KEY 없으면 원래 에러 throw.
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error(
+        `Anthropic API 일시 과부하 (재시도 2회). 잠시 후 다시 시도하거나 GEMINI_API_KEY 를 설정하면 자동 우회합니다. (원본: ${lastError?.message ?? 'unknown'})`,
+      )
+    }
+    try {
+      const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+      const geminiResp = await gemini.models.generateContent({
+        model: FALLBACK_MODEL,
+        contents: [
+          { role: 'user', parts: [{ text: userMessage }] },
+        ],
+        config: {
+          systemInstruction: systemPrompt,
+          // JSON 응답 강제 — 마크다운 wrap 사고 차단
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+        },
+      })
+      const candidateText = geminiResp.text ?? ''
+      if (!candidateText.trim()) {
+        throw new Error('Gemini fallback: 빈 응답')
+      }
+      rawText = candidateText
+      actualModel = FALLBACK_MODEL
+    } catch (e) {
+      throw new Error(
+        `Anthropic + Gemini 모두 실패. Anthropic: ${lastError?.message ?? '?'} · Gemini: ${(e as Error).message}`,
+      )
+    }
+  }
 
   // JSON 파싱
   let parsed: { atoms: unknown[]; relations: unknown[] }
@@ -230,7 +263,8 @@ ${text}`
   const issues: string[] = []
   const atoms: ExtractedAtom[] = []
   const extracted_by = {
-    model,
+    // actualModel = primary 성공 시 Anthropic, fallback 시 Gemini.
+    model: actualModel,
     extractor_version: TASK_EXTRACTOR_VERSION,
     extracted_at: new Date().toISOString(),
   }
