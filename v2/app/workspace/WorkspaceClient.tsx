@@ -1740,6 +1740,16 @@ function AtomDigest({ folderId, folderName }: { folderId: string; folderName: st
           총 {counts.data?.total ?? '…'} 항목
         </p>
         <div className="flex items-center gap-2">
+          {sortedAtoms.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => downloadAtomsCsv(folderName, sortedAtoms)}
+              className="text-caption text-muted hover:text-ink transition-colors"
+              title="현재 보이는 항목을 CSV 로 저장 (Excel 한글 지원)"
+            >
+              CSV 다운로드
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={handleRefresh}
@@ -1899,6 +1909,35 @@ function UpcomingDeadlines({ folderNames }: { folderNames: Record<string, string
       </ul>
     </section>
   )
+}
+
+function downloadAtomsCsv(folderName: string, atoms: AtomDigestResponse['atoms']) {
+  const escape = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)
+  const header = ['유형', '내용', '마감일', '신뢰도', '출처', '위치', '원문']
+  const rows = atoms.map((a) => {
+    const due = typeof a.attributes?.due_at === 'string' ? a.attributes.due_at : ''
+    return [
+      ATOM_LABEL[a.type] ?? a.type,
+      a.content,
+      due,
+      `${Math.round(a.confidence * 100)}%`,
+      a.from_file.filename,
+      a.location ?? '',
+      a.raw_text ?? '',
+    ]
+  })
+  const csv = [header, ...rows].map((r) => r.map(escape).join(',')).join('\n')
+  // Excel 한글 깨짐 방지 — BOM
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+  a.download = `${folderName}_항목_${date}.csv`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 function AtomChip({
