@@ -309,10 +309,10 @@ h1, h2, h3, h4 {
   }
 }
 .chat-bubble-in {
-  animation: bubble-in 200ms var(--ease-out) both;
+  animation: bubble-in 320ms var(--ease-out) both;
 }
 
-/* 타이핑 indicator — 3 dots 위로 출렁. */
+/* 타이핑 indicator — 3 dots 위로 출렁. 더 차분하게 (1.2s → 2.0s). */
 @keyframes typing-dot {
   0%, 60%, 100% {
     transform: translateY(0);
@@ -324,13 +324,24 @@ h1, h2, h3, h4 {
   }
 }
 .typing-dot {
-  animation: typing-dot 1.2s var(--ease-in-out) infinite;
+  animation: typing-dot 2.0s var(--ease-in-out) infinite;
 }
 .typing-dot:nth-child(2) {
-  animation-delay: 0.15s;
+  animation-delay: 0.25s;
 }
 .typing-dot:nth-child(3) {
-  animation-delay: 0.3s;
+  animation-delay: 0.5s;
+}
+
+/* 스피너 — Tailwind animate-spin 은 기본 1s. 챗·처리 인디케이터는 더 차분히 (2.0s).
+   Lucide Loader2 + animate-spin 적용된 곳을 우리 클래스로 덮음. */
+.animate-spin-slow {
+  animation: spin 2s linear infinite;
+}
+/* 의도: animate-spin (loading) 의 회전을 1s → 2.0s 로 늦춰서 깜빡임 인상 완화.
+   prefers-reduced-motion 시 정지 (기존 media query 가 처리). */
+.animate-spin {
+  animation-duration: 2s !important;
 }
 
 /* 챗 마크다운 렌더 — 라이트(cream) 패널 기준. assistant 텍스트는 ink 톤. */

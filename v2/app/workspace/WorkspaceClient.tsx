@@ -133,6 +133,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] })
+      queryClient.invalidateQueries({ queryKey: ['folders-summary'] })
       setShowAddForm(false)
     },
   })
@@ -184,6 +185,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['folders'] })
+      queryClient.invalidateQueries({ queryKey: ['folders-summary'] })
     },
   })
 
@@ -199,7 +201,33 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   const folders = foldersQuery.data?.folders ?? []
   const selectedFolder = folders.find(f => f.id === selectedFolderId)
 
-  // 검색 + 탭 필터 — 클라이언트에서. recent 는 React Query 캐시에서 latest_modified 읽음.
+  // 모든 폴더의 카드용 통계를 한 번에 — 카드별 N개 쿼리 cascade 제거.
+  // staleTime 60s, 갱신은 명시적 invalidate 로만 (auto-poll 안 함).
+  const folderSummaries = useQuery({
+    queryKey: ['folders-summary'],
+    queryFn: async (): Promise<{
+      summaries: Array<{
+        folder_id: string
+        file_count: number | null
+        latest_modified: string | null
+        latest_name: string | null
+        atom_count: number
+        processed_files_count: number
+        drive_error?: string
+      }>
+    }> => {
+      const res = await fetch('/api/folders/summary')
+      if (!res.ok) throw new Error('폴더 요약 조회 실패')
+      return res.json()
+    },
+    staleTime: 60_000,
+    enabled: folders.length > 0,
+  })
+  const summaryByFolder = new Map(
+    folderSummaries.data?.summaries.map((s) => [s.folder_id, s]) ?? [],
+  )
+
+  // 검색 + 탭 필터. recent 는 summary 의 latest_modified 사용 (단일 소스 → 안정적 정렬).
   const filteredFolders = (() => {
     let list = folders
     if (folderSearch.trim()) {
@@ -211,10 +239,8 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     }
     if (folderTab === 'recent') {
       list = [...list].sort((a, b) => {
-        const aStats = queryClient.getQueryData<{ latest_modified: string | null }>(['folder-stats', a.id])
-        const bStats = queryClient.getQueryData<{ latest_modified: string | null }>(['folder-stats', b.id])
-        const aT = aStats?.latest_modified ?? a.created_at
-        const bT = bStats?.latest_modified ?? b.created_at
+        const aT = summaryByFolder.get(a.id)?.latest_modified ?? a.created_at
+        const bT = summaryByFolder.get(b.id)?.latest_modified ?? b.created_at
         return bT.localeCompare(aT)
       })
     }
@@ -417,6 +443,8 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
                 <FolderCard
                   key={folder.id}
                   folder={folder}
+                  summary={summaryByFolder.get(folder.id) ?? null}
+                  summaryLoading={folderSummaries.isLoading}
                   selected={selectedFolderId === folder.id}
                   onSelect={() => setSelectedFolderId(folder.id === selectedFolderId ? null : folder.id)}
                   onDelete={() => handleDelete(folder)}
@@ -751,17 +779,24 @@ function Field({ label, required, hint, children }: { label: string; required?: 
   )
 }
 
-function TodaysActivity({ folderIds, folderNames }: { folderIds: string[]; folderNames: Record<string, string> }) {
-  // 각 폴더 stats 를 React Query 캐시에서 읽기 (FolderCardStats 가 이미 fetch 하므로 재요청 X)
+function TodaysActivity({ folderNames }: { folderIds: string[]; folderNames: Record<string, string> }) {
+  // folders-summary 캐시에서 읽기 — bulk 라 모든 폴더 동시에 ready.
   const qc = useQueryClient()
+  const summary = qc.getQueryData<{
+    summaries: Array<{ folder_id: string; latest_modified: string | null; latest_name: string | null }>
+  }>(['folders-summary'])
+
   const recent: Array<{ folderId: string; folderName: string; latest: string; latestName: string }> = []
-  for (const fid of folderIds) {
-    const data = qc.getQueryData<{ file_count: number; latest_modified: string | null; latest_name: string | null }>(['folder-stats', fid])
-    if (data?.latest_modified && data.latest_name) {
-      const ms = Date.now() - new Date(data.latest_modified).getTime()
-      if (ms < 24 * 60 * 60 * 1000) {
-        recent.push({ folderId: fid, folderName: folderNames[fid], latest: data.latest_modified, latestName: data.latest_name })
-      }
+  for (const s of summary?.summaries ?? []) {
+    if (!s.latest_modified || !s.latest_name) continue
+    const ms = Date.now() - new Date(s.latest_modified).getTime()
+    if (ms < 24 * 60 * 60 * 1000) {
+      recent.push({
+        folderId: s.folder_id,
+        folderName: folderNames[s.folder_id] ?? '',
+        latest: s.latest_modified,
+        latestName: s.latest_name,
+      })
     }
   }
 
@@ -817,43 +852,37 @@ function FolderCardSkeleton() {
   )
 }
 
+interface FolderSummaryRow {
+  folder_id: string
+  file_count: number | null
+  latest_modified: string | null
+  latest_name: string | null
+  atom_count: number
+  processed_files_count: number
+  drive_error?: string
+}
+
 function FolderCard({
   folder,
+  summary,
+  summaryLoading,
   selected,
   onSelect,
   onDelete,
   deleting,
 }: {
   folder: Folder
+  summary: FolderSummaryRow | null
+  summaryLoading: boolean
   selected: boolean
   onSelect: () => void
   onDelete: () => void
   deleting: boolean
 }) {
-  const stats = useQuery({
-    queryKey: ['folder-stats', folder.id],
-    staleTime: 60_000,
-    placeholderData: keepPreviousData,
-    queryFn: async () => {
-      const res = await fetch(`/api/folders/${folder.id}/stats`)
-      if (!res.ok) throw new Error('stats')
-      return res.json() as Promise<{ file_count: number; latest_modified: string | null; latest_name: string | null }>
-    },
-  })
-
-  // 폴더당 추출된 atom 합계 — 카드에 보여서 "처리 했는지" 한 눈에.
-  const atomCounts = useQuery({
-    queryKey: ['folder-atom-counts', folder.id],
-    staleTime: 60_000,
-    queryFn: async () => {
-      const res = await fetch(`/api/atoms/counts?folder_id=${folder.id}`)
-      if (!res.ok) throw new Error('atom counts')
-      return res.json() as Promise<{ counts: Record<string, number>; total: number; processed_files: number }>
-    },
-  })
-
-  const isRecent = stats.data?.latest_modified
-    && (Date.now() - new Date(stats.data.latest_modified).getTime() < 24 * 60 * 60 * 1000)
+  const isRecent = summary?.latest_modified
+    && (Date.now() - new Date(summary.latest_modified).getTime() < 24 * 60 * 60 * 1000)
+  // bulk endpoint 가 한 번에 resolve → 카드 안에선 더 이상 cascading pop-in 없음.
+  // summary 가 null + loading 이면 placeholder, summary 가 null + 비-로딩이면 빈 데이터.
 
   return (
     <div
@@ -885,12 +914,12 @@ function FolderCard({
                 명단 연결됨
               </span>
             ) : null}
-            {atomCounts.data && atomCounts.data.processed_files > 0 ? (
+            {summary && summary.processed_files_count > 0 ? (
               <span
                 className="px-2 py-0.5 rounded-full bg-canvas/80 backdrop-blur text-caption text-ink"
-                title={`처리된 파일 ${atomCounts.data.processed_files}개`}
+                title={`처리된 파일 ${summary.processed_files_count}개`}
               >
-                Atom {atomCounts.data.total}
+                Atom {summary.atom_count}
               </span>
             ) : null}
           </div>
@@ -903,19 +932,25 @@ function FolderCard({
             />
           ) : null}
         </div>
-        {/* 메타 정보 영역 — 점멸 방지: stats 가 없는 동안 텍스트 대신 동일 폭의 스켈레톤 바 */}
+        {/* 메타 정보 영역 — bulk summary 가 ready 되면 텍스트, 아니면 동일 폭 스켈레톤 (점멸 없음) */}
         <div className="bg-canvas p-4 space-y-1">
           <p className="text-body-md text-ink font-medium truncate">{folder.name}</p>
-          {stats.data ? (
+          {summary && summary.file_count !== null ? (
             <p className="text-caption text-muted-soft tabular truncate">
-              파일 {stats.data.file_count}개
-              {stats.data.latest_modified ? ` · ${formatRelative(stats.data.latest_modified)}` : ''}
+              파일 {summary.file_count}개
+              {summary.latest_modified ? ` · ${formatRelative(summary.latest_modified)}` : ''}
             </p>
-          ) : (
+          ) : summary?.drive_error ? (
+            <p className="text-caption text-muted-soft truncate" title={summary.drive_error}>
+              Drive 정보 없음
+            </p>
+          ) : summaryLoading ? (
             <span
               className="block h-3 w-28 rounded bg-surface-card opacity-60"
               aria-hidden
             />
+          ) : (
+            <span className="block h-3 w-28" aria-hidden />
           )}
         </div>
       </button>
@@ -934,41 +969,7 @@ function FolderCard({
   )
 }
 
-function FolderCardStats({ folderId }: { folderId: string }) {
-  const query = useQuery({
-    queryKey: ['folder-stats', folderId],
-    staleTime: 60_000,
-    queryFn: async () => {
-      const res = await fetch(`/api/folders/${folderId}/stats`)
-      if (!res.ok) throw new Error('stats fail')
-      return res.json() as Promise<{ file_count: number; latest_modified: string | null; latest_name: string | null }>
-    },
-  })
-
-  if (query.isLoading || query.isError || !query.data) {
-    return <span className="inline-block h-3 w-24 rounded bg-surface-card opacity-60" aria-hidden />
-  }
-
-  const { file_count, latest_modified } = query.data
-  // 24시간 이내 활동 = "활발함" 표시
-  const isRecent = latest_modified && (Date.now() - new Date(latest_modified).getTime() < 24 * 60 * 60 * 1000)
-
-  return (
-    <p className="text-caption text-muted-soft tabular flex items-center gap-1.5">
-      {isRecent ? (
-        <span
-          className="inline-block w-1.5 h-1.5 rounded-full bg-ink"
-          aria-label="오늘 활동 있음"
-          title="오늘 활동 있음"
-        />
-      ) : null}
-      <span>
-        파일 {file_count}개
-        {latest_modified ? ` · ${formatRelative(latest_modified)}` : ''}
-      </span>
-    </p>
-  )
-}
+// (FolderCardStats 는 bulk summary 도입 후 미사용 — 제거됨)
 
 function formatRelative(iso: string): string {
   const d = new Date(iso).getTime()

@@ -118,13 +118,14 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
       return res.json()
     },
     onSuccess: () => {
-      // processed_files 캐시 + 모든 atom 파생 뷰 (Digest, 카운트, 다가오는 마감, 챗 suggestion) 동시 무효화.
+      // processed_files 캐시 + 모든 atom 파생 뷰 (Digest, 카운트, 다가오는 마감, 챗 suggestion, 폴더카드) 동시 무효화.
       qc.invalidateQueries({ queryKey: ['processed-files', folderId] })
       qc.invalidateQueries({ queryKey: ['folder-atoms', folderId] })
       qc.invalidateQueries({ queryKey: ['folder-atom-counts', folderId] })
       qc.invalidateQueries({ queryKey: ['workspace-atom-counts-summary'] })
       qc.invalidateQueries({ queryKey: ['upcoming-deadlines'] })
       qc.invalidateQueries({ queryKey: ['processed-file-detail'] })
+      qc.invalidateQueries({ queryKey: ['folders-summary'] })
     },
   })
 
@@ -619,12 +620,13 @@ function AtomViewer({
       }
     },
     onSuccess: () => {
-      // 모든 atom 파생 캐시 무효화 (folder-atoms / counts / upcoming / processed-files).
+      // 모든 atom 파생 캐시 무효화 (folder-atoms / counts / upcoming / processed-files / 폴더카드).
       qc.invalidateQueries({ queryKey: ['processed-files'] })
       qc.invalidateQueries({ queryKey: ['folder-atoms'] })
       qc.invalidateQueries({ queryKey: ['folder-atom-counts'] })
       qc.invalidateQueries({ queryKey: ['workspace-atom-counts-summary'] })
       qc.invalidateQueries({ queryKey: ['upcoming-deadlines'] })
+      qc.invalidateQueries({ queryKey: ['folders-summary'] })
       onClose()
     },
   })
