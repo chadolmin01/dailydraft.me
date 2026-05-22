@@ -128,6 +128,34 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
     setPath(path.slice(0, index + 1))
   }
 
+  // 일괄 처리 — 현재 화면의 처리 가능 + 아직 안 된 파일을 순차로 트리거.
+  // 의도: Vercel 60s 한계 + LLM 동시 호출 비용 절감 → 직렬 (사용자가 진행률 봄).
+  const [bulkPending, setBulkPending] = useState<{ total: number; done: number } | null>(null)
+  const runBulkProcess = async () => {
+    const targets = (query.data?.files ?? []).filter(
+      (f) =>
+        PROCESSABLE_MIMES.has(f.mimeType) &&
+        !processedMap.get(f.id)?.parsing_completed_at,
+    )
+    if (targets.length === 0) return
+    setBulkPending({ total: targets.length, done: 0 })
+    for (let i = 0; i < targets.length; i++) {
+      const file = targets[i]
+      try {
+        await processMutation.mutateAsync(file)
+      } catch {
+        // 개별 실패는 무시하고 다음 파일로 — 결과는 처리 컬럼에 표시됨.
+      }
+      setBulkPending({ total: targets.length, done: i + 1 })
+    }
+    setBulkPending(null)
+  }
+
+  // 현재 폴더에서 미처리 파일 개수 (toolbar 버튼 표시 조건)
+  const unprocessedCount = (query.data?.files ?? []).filter(
+    (f) => PROCESSABLE_MIMES.has(f.mimeType) && !processedMap.get(f.id)?.parsing_completed_at,
+  ).length
+
   const allItems = query.data
     ? [
         ...query.data.subfolders.map(i => ({ ...i, kind: 'folder' as const })),
@@ -141,14 +169,32 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
 
   return (
     <div className="rounded-lg border border-hairline bg-canvas overflow-hidden">
-      {/* 툴바: 브레드크럼 + 카운트 */}
+      {/* 툴바: 브레드크럼 + 카운트 + 일괄처리 */}
       <div className="flex items-center justify-between gap-4 px-4 py-3 border-b border-hairline bg-surface-soft">
         <Breadcrumb path={path} onJump={jumpTo} />
-        {query.data ? (
-          <p className="text-caption text-muted-soft shrink-0 tabular">
-            폴더 {query.data.summary.subfolders} · 파일 {query.data.summary.files}
-          </p>
-        ) : null}
+        <div className="flex items-center gap-3 shrink-0">
+          {bulkPending ? (
+            <span className="text-caption text-muted tabular inline-flex items-center gap-1.5">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              처리 중 {bulkPending.done} / {bulkPending.total}
+            </span>
+          ) : unprocessedCount > 0 ? (
+            <button
+              type="button"
+              onClick={runBulkProcess}
+              className="text-caption text-ink border border-hairline px-2.5 py-1 rounded-full hover:bg-canvas transition-colors inline-flex items-center gap-1.5"
+              title="이 폴더 안의 처리 가능한 파일을 모두 Atom 추출"
+            >
+              <Sparkles className="w-3 h-3" />
+              안 된 {unprocessedCount}개 모두 처리
+            </button>
+          ) : null}
+          {query.data ? (
+            <p className="text-caption text-muted-soft tabular">
+              폴더 {query.data.summary.subfolders} · 파일 {query.data.summary.files}
+            </p>
+          ) : null}
+        </div>
       </div>
 
       {/* 본문 — 초기 로딩은 스켈레톤, 재페치는 본문 dim */}

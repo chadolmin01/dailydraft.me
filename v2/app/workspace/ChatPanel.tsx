@@ -61,7 +61,13 @@ const SUGGESTIONS = [
   },
 ] as const
 
-const QUICK_ACTIONS = ['미제출 팀', '오늘 활동', '메일 초안'] as const
+const QUICK_ACTIONS = [
+  '미제출 팀',
+  '다가오는 마감',
+  '최근 결정사항',
+  '오늘 활동',
+  '메일 초안',
+] as const
 
 export function ChatPanel({ folderId, folderName }: Props) {
   const qc = useQueryClient()
