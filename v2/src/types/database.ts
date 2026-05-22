@@ -64,6 +64,7 @@ export type Database = {
           created_at: string
           drive_folder_id: string | null
           id: string
+          last_synced_at: string | null
           name: string
           program: string | null
           program_start_date: string | null
@@ -75,6 +76,7 @@ export type Database = {
           created_at?: string
           drive_folder_id?: string | null
           id?: string
+          last_synced_at?: string | null
           name: string
           program?: string | null
           program_start_date?: string | null
@@ -86,6 +88,7 @@ export type Database = {
           created_at?: string
           drive_folder_id?: string | null
           id?: string
+          last_synced_at?: string | null
           name?: string
           program?: string | null
           program_start_date?: string | null
@@ -157,6 +160,132 @@ export type Database = {
           name?: string
           owner_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      processed_files: {
+        Row: {
+          atom_count: number
+          created_at: string
+          drive_file_id: string
+          drive_modified_at: string | null
+          filename: string
+          folder_id: string | null
+          id: string
+          mime_type: string
+          parsed_text: string | null
+          parsing_completed_at: string | null
+          parsing_error: string | null
+          relation_count: number
+          size_bytes: number | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          atom_count?: number
+          created_at?: string
+          drive_file_id: string
+          drive_modified_at?: string | null
+          filename: string
+          folder_id?: string | null
+          id?: string
+          mime_type: string
+          parsed_text?: string | null
+          parsing_completed_at?: string | null
+          parsing_error?: string | null
+          relation_count?: number
+          size_bytes?: number | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          atom_count?: number
+          created_at?: string
+          drive_file_id?: string
+          drive_modified_at?: string | null
+          filename?: string
+          folder_id?: string | null
+          id?: string
+          mime_type?: string
+          parsed_text?: string | null
+          parsing_completed_at?: string | null
+          parsing_error?: string | null
+          relation_count?: number
+          size_bytes?: number | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      extracted_atoms: {
+        Row: {
+          attributes: Json
+          confidence: number
+          content: string
+          created_at: string
+          id: string
+          local_id: string
+          processed_file_id: string
+          provenance: Json
+          type: string
+          workspace_id: string
+        }
+        Insert: {
+          attributes?: Json
+          confidence: number
+          content: string
+          created_at?: string
+          id?: string
+          local_id: string
+          processed_file_id: string
+          provenance: Json
+          type: string
+          workspace_id: string
+        }
+        Update: {
+          attributes?: Json
+          confidence?: number
+          content?: string
+          created_at?: string
+          id?: string
+          local_id?: string
+          processed_file_id?: string
+          provenance?: Json
+          type?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      extracted_relations: {
+        Row: {
+          confidence: number
+          created_at: string
+          from_atom_id: string
+          id: string
+          processed_file_id: string
+          to_atom_id: string
+          type: string
+          workspace_id: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          from_atom_id: string
+          id?: string
+          processed_file_id: string
+          to_atom_id: string
+          type: string
+          workspace_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          from_atom_id?: string
+          id?: string
+          processed_file_id?: string
+          to_atom_id?: string
+          type?: string
+          workspace_id?: string
         }
         Relationships: []
       }

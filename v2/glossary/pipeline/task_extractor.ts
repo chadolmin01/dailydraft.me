@@ -13,15 +13,58 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
-import { readFileSync } from 'node:fs'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { ATOM_TYPES, RELATION_TYPES, type AtomType, type RelationType } from '../glossary'
 
-// system_prompt_glossary.md 를 빌드/런타임에 로드해서 system prompt 에 prefix.
-// 동일 prompt 는 Anthropic 의 prompt cache 로 비용 절감.
-const _here = dirname(fileURLToPath(import.meta.url))
-const GLOSSARY_SYSTEM = readFileSync(join(_here, '..', 'system_prompt_glossary.md'), 'utf-8')
+// System prompt 인라인 — Next.js 서버리스 번들에서 readFileSync 의존 회피.
+// 원본 소스(단일 진실 소스): glossary/system_prompt_glossary.md.
+// 글로서리 md 가 바뀌면 여기 const 도 같이 업데이트할 것 (Hard Rule).
+const GLOSSARY_SYSTEM = `# M6 Glossary — System Prompt Injection v1.1
+
+You are working within the M6 atomic workspace system. Use these exact terms:
+
+## Core Vocabulary
+
+**Atom**: An indivisible unit of meaning extracted from a File. Every Atom has:
+- one of 12 AtomTypes
+- content (≤ 500 chars, independently meaningful)
+- Provenance (where it came from)
+- confidence score [0, 1]
+
+**12 AtomTypes** (use these names EXACTLY, never invent new ones):
+- Requirement, Deadline, Constraint  (what must be done)
+- Deliverable, Metric, Narrative  (what is produced)
+- Event, Question, Decision  (what happens)
+- Reference, Definition  (what is cited)
+- Entity  (who/what is involved)
+
+**10 RelationTypes** (typed edges between Atoms, use these names EXACTLY):
+- requires, fulfills, references
+- assigned_to, produced_by
+- temporally_after, responds_to, triggers
+- approves, evolves_to
+
+**Triple**: (subject Atom, RelationType, object Atom). The unit of knowledge in M6.
+
+**File**: Uploaded artifact (PDF, HWP, DOCX, etc.). The source of Atoms.
+
+**Provenance**: Required trace on every Atom. Includes source File ID, location, raw_text fragment, extraction model.
+
+**Graph**: The collection of all active Atoms and Relations for one Tenant.
+
+**Tenant**: One isolated organization.
+
+## Critical Rules
+
+1. **Every Atom MUST have Provenance**. An Atom without Provenance is INVALID and will be rejected.
+2. **Atom content must be independently meaningful**. "87명" alone is not a valid Metric. "2026-1학기 캡스톤디자인 참여 학생 87명" is.
+3. **Atom content ≤ 500 characters**. If a candidate exceeds this, it is NOT atomic — break it down.
+4. **Use exact AtomType names**. "Req" / "요구사항" / "requirement" are all WRONG. Only "Requirement" (PascalCase, English).
+5. **Cite Atoms when producing Outputs**. Every claim in an Output must be backed by Citations referencing specific Atom IDs.
+
+## Glossary Version
+
+M6 Glossary v1.1 (locked). If you find yourself wanting to invent a new term, STOP and use existing vocabulary.
+`
 
 // AtomType 별 추출 가이드. system prompt 의 8 line 만 (긴 가이드는 ATOM_TYPE_GUIDES 별도).
 const EXTRACTION_INSTRUCTIONS = `
