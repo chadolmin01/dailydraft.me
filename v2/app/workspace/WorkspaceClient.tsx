@@ -1872,27 +1872,8 @@ function UpcomingDeadlines({ folderNames }: { folderNames: Record<string, string
     .sort((a, b) => (a.due ?? '').localeCompare(b.due ?? ''))
     .slice(0, 5)
 
-  if (q.isLoading) {
-    return (
-      <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
-        <h3 className="text-title-sm text-ink">다가오는 마감</h3>
-        <p className="text-caption text-muted-soft">불러오는 중…</p>
-      </section>
-    )
-  }
-
-  if (upcoming.length === 0) {
-    return (
-      <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
-        <h3 className="text-title-sm text-ink">다가오는 마감</h3>
-        <p className="text-caption text-muted-soft">
-          {q.data && q.data.atoms.length === 0
-            ? '처리된 파일에서 마감 정보가 발견되지 않았습니다.'
-            : '예정된 마감이 없습니다.'}
-        </p>
-      </section>
-    )
-  }
+  // 비어있을 때는 위젯 자체를 숨김 (사용자 피드백 — 빈 상태 메시지가 시각적 노이즈).
+  if (q.isLoading || upcoming.length === 0) return null
 
   return (
     <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">

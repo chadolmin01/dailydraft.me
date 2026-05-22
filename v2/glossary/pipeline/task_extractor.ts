@@ -165,18 +165,34 @@ export async function extractFromText(
 
 ${text}`
 
-  const response = await client.messages.create({
-    model,
-    max_tokens: 8192,
-    system: [
-      {
-        type: 'text',
-        text: systemPrompt,
-        cache_control: { type: 'ephemeral' },  // prompt caching → 다음 fixture 호출 시 비용 절감
-      },
-    ],
-    messages: [{ role: 'user', content: userMessage }],
-  })
+  // 의도: Anthropic 529 (overloaded) / 5xx 일시 오류를 한 번 재시도 (백오프 2초).
+  //       processed_files 의 parsing_error 가 529 로 도배되는 사고 재발 방지.
+  //       4xx (잘못된 요청 등) 는 재시도 안 함.
+  const callOnce = () =>
+    client.messages.create({
+      model,
+      max_tokens: 8192,
+      system: [
+        {
+          type: 'text',
+          text: systemPrompt,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      messages: [{ role: 'user', content: userMessage }],
+    })
+
+  let response: Awaited<ReturnType<typeof callOnce>>
+  try {
+    response = await callOnce()
+  } catch (e) {
+    const msg = (e as Error).message
+    const isRetryable = /\b(429|529|500|502|503|504)\b/.test(msg) || /overloaded/i.test(msg)
+    if (!isRetryable) throw e
+    // 2 초 + jitter
+    await new Promise(r => setTimeout(r, 2000 + Math.random() * 500))
+    response = await callOnce()
+  }
 
   const rawText = response.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')

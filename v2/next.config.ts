@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
+  // 의도: pdf-parse 가 내부적으로 동적 import 하는 pdfjs-dist/.../pdf.worker.mjs 를
+  //       Next 가 번들에 못 넣어서 "Cannot find module pdf.worker.mjs" 런타임 에러 발생.
+  //       serverExternalPackages 에 넣으면 번들 안 하고 Node 의 require 가 직접 해결.
+  serverExternalPackages: ['pdf-parse', 'pdfjs-dist'],
+
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
