@@ -116,7 +116,13 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
       return res.json()
     },
     onSuccess: () => {
+      // processed_files 캐시 + 모든 atom 파생 뷰 (Digest, 카운트, 다가오는 마감, 챗 suggestion) 동시 무효화.
       qc.invalidateQueries({ queryKey: ['processed-files', folderId] })
+      qc.invalidateQueries({ queryKey: ['folder-atoms', folderId] })
+      qc.invalidateQueries({ queryKey: ['folder-atom-counts', folderId] })
+      qc.invalidateQueries({ queryKey: ['workspace-atom-counts-summary'] })
+      qc.invalidateQueries({ queryKey: ['upcoming-deadlines'] })
+      qc.invalidateQueries({ queryKey: ['processed-file-detail'] })
     },
   })
 

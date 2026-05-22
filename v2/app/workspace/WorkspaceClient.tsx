@@ -1654,9 +1654,15 @@ function useFolderAtoms(folderId: string, type: string | null, keyword: string) 
 }
 
 function AtomDigest({ folderId, folderName }: { folderId: string; folderName: string }) {
+  const qc = useQueryClient()
   const [filterType, setFilterType] = useState<string | null>(null)
   const [rawKeyword, setRawKeyword] = useState('')
   const [keyword, setKeyword] = useState('')
+
+  const handleRefresh = () => {
+    qc.invalidateQueries({ queryKey: ['folder-atoms', folderId] })
+    qc.invalidateQueries({ queryKey: ['folder-atom-counts', folderId] })
+  }
 
   // 300ms 디바운스 — 매니저가 타이핑 중에 매 keystroke 페치 방지.
   useEffect(() => {
@@ -1710,15 +1716,25 @@ function AtomDigest({ folderId, folderName }: { folderId: string; folderName: st
           {folderName} · 처리된 파일 {counts.data?.processed_files ?? '…'}개 ·
           총 {counts.data?.total ?? '…'} 항목
         </p>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-soft pointer-events-none" />
-          <input
-            type="search"
-            value={rawKeyword}
-            onChange={(e) => setRawKeyword(e.target.value)}
-            placeholder="내용 검색"
-            className="h-8 pl-8 pr-3 rounded-full bg-surface-soft border border-hairline text-caption text-ink placeholder:text-muted-soft focus:outline-none focus:border-ink w-44 transition-colors"
-          />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={q.isFetching}
+            className="text-caption text-muted hover:text-ink transition-colors disabled:opacity-50"
+          >
+            {q.isFetching ? '갱신 중…' : '새로고침'}
+          </button>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-soft pointer-events-none" />
+            <input
+              type="search"
+              value={rawKeyword}
+              onChange={(e) => setRawKeyword(e.target.value)}
+              placeholder="내용 검색"
+              className="h-8 pl-8 pr-3 rounded-full bg-surface-soft border border-hairline text-caption text-ink placeholder:text-muted-soft focus:outline-none focus:border-ink w-44 transition-colors"
+            />
+          </div>
         </div>
       </div>
 
