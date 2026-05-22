@@ -344,6 +344,17 @@ h1, h2, h3, h4 {
   animation-duration: 2s !important;
 }
 
+/* Tailwind 의 animate-pulse 는 2s + opacity 1→0.5 변동 → "강한 점멸" 인상.
+   카드 다수가 동시 펄스 시 산만함. 3.2s + 0.85 floor 로 차분화.
+   skeleton 들이 거슬리게 깜빡이지 않게 함. */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+.animate-pulse {
+  animation: pulse-soft 3.2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+}
+
 /* 챗 마크다운 렌더 — 라이트(cream) 패널 기준. assistant 텍스트는 ink 톤. */
 .chat-markdown p {
   margin: 0 0 var(--space-2) 0;
