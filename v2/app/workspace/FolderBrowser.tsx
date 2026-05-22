@@ -586,6 +586,7 @@ function AtomViewer({
   onClose: () => void
   onReprocess: (file: { id: string; name: string; mimeType: string; size?: string; modifiedTime: string }) => void
 }) {
+  const qc = useQueryClient()
   const query = useQuery({
     queryKey: ['processed-file-detail', processedFileId],
     queryFn: async (): Promise<ViewerResponse> => {
@@ -594,6 +595,31 @@ function AtomViewer({
       return res.json()
     },
   })
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/files/process/${processedFileId}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error?.message ?? '삭제 실패')
+      }
+    },
+    onSuccess: () => {
+      // 모든 atom 파생 캐시 무효화 (folder-atoms / counts / upcoming / processed-files).
+      qc.invalidateQueries({ queryKey: ['processed-files'] })
+      qc.invalidateQueries({ queryKey: ['folder-atoms'] })
+      qc.invalidateQueries({ queryKey: ['folder-atom-counts'] })
+      qc.invalidateQueries({ queryKey: ['workspace-atom-counts-summary'] })
+      qc.invalidateQueries({ queryKey: ['upcoming-deadlines'] })
+      onClose()
+    },
+  })
+
+  const handleDelete = () => {
+    if (window.confirm('이 파일의 처리 결과를 삭제합니다.\n(원본 Drive 파일은 그대로 남습니다.)\n다시 처리하려면 폴더 탭에서 [처리] 버튼을 누르세요.')) {
+      deleteMutation.mutate()
+    }
+  }
 
   useEffect(() => {
     const onEsc = (e: KeyboardEvent) => {
@@ -641,23 +667,33 @@ function AtomViewer({
           </div>
           <div className="flex items-center gap-3 shrink-0">
             {query.data?.file ? (
-              <button
-                type="button"
-                onClick={() =>
-                  onReprocess({
-                    id: query.data!.file.drive_file_id,
-                    name: query.data!.file.filename,
-                    mimeType: query.data!.file.mime_type,
-                    size: query.data!.file.size_bytes?.toString(),
-                    modifiedTime:
-                      query.data!.file.drive_modified_at ??
-                      new Date().toISOString(),
-                  })
-                }
-                className="text-caption text-muted hover:text-ink transition-colors"
-              >
-                다시 처리
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onReprocess({
+                      id: query.data!.file.drive_file_id,
+                      name: query.data!.file.filename,
+                      mimeType: query.data!.file.mime_type,
+                      size: query.data!.file.size_bytes?.toString(),
+                      modifiedTime:
+                        query.data!.file.drive_modified_at ??
+                        new Date().toISOString(),
+                    })
+                  }
+                  className="text-caption text-muted hover:text-ink transition-colors"
+                >
+                  다시 처리
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={deleteMutation.isPending}
+                  className="text-caption text-muted hover:text-ink transition-colors disabled:opacity-50"
+                >
+                  {deleteMutation.isPending ? '삭제 중…' : '삭제'}
+                </button>
+              </>
             ) : null}
             <button
               type="button"

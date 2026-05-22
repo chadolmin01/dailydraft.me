@@ -5,8 +5,38 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
+import { createAdminClient } from '@/src/lib/supabase/admin'
 import { ApiResponse, isValidUUID } from '@/src/lib/api-utils'
 import { getOrCreateWorkspace } from '@/src/lib/workspace'
+
+// DELETE /api/files/process/[id] — 처리 결과 삭제 (FK cascade 로 atoms/relations 함께 삭제)
+// 의도: 매니저가 잘못 추출된 파일을 정리하거나 재처리 전 초기화.
+export async function DELETE(_request: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return ApiResponse.unauthorized()
+
+  const { id } = await ctx.params
+  if (!isValidUUID(id)) return ApiResponse.badRequest('id (uuid) 형식 오류')
+
+  const workspace = await getOrCreateWorkspace(supabase, user.id)
+
+  // 소유권 확인
+  const { data: file } = await supabase
+    .from('processed_files')
+    .select('id')
+    .eq('id', id)
+    .eq('workspace_id', workspace.id)
+    .maybeSingle()
+  if (!file) return ApiResponse.notFound('파일을 찾을 수 없습니다')
+
+  // RLS 우회 — cascade 가 atom_relations/atoms 까지 처리.
+  const admin = createAdminClient()
+  const { error } = await admin.from('processed_files').delete().eq('id', id)
+  if (error) return ApiResponse.internalError(error.message)
+
+  return ApiResponse.ok({ id, deleted: true })
+}
 
 export async function GET(_request: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const supabase = await createServerSupabaseClient()
