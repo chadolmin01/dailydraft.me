@@ -5,12 +5,11 @@ import { ArrowUp, Square } from 'lucide-react'
 import { IconButton } from './IconButton'
 
 /**
- * 채팅 입력창. ChatGPT/Claude 스타일 — pill 형태, send 버튼 우측 임베드.
- * - Enter 전송, Shift+Enter 줄바꿈
+ * 채팅 입력창 (라이트). pill 형태, send 버튼 우측 임베드.
+ * - Enter 전송, Shift+Enter 줄바꿈, IME 조합 중 Enter 무시
  * - 자동 높이 (최대 7줄)
- * - send pending 중 → send 버튼 → cancel(stop) 버튼으로 전환
- * - 빈 입력 → send 버튼 비활성
- * - placeholder 는 폴더 선택 여부에 따라 다름
+ * - send pending 중 → stop 버튼으로 전환
+ * - 4000자 초과 표시
  */
 
 interface ChatInputProps {
@@ -56,10 +55,10 @@ export function ChatInput({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="px-4 pb-4 pt-3 border-t border-hairline-dark">
+    <form onSubmit={handleSubmit} className="px-4 pb-4 pt-3 border-t border-hairline">
       <div
-        className={`relative flex items-end gap-2 rounded-3xl border bg-surface-dark-elevated px-3 py-2 transition-colors ${
-          overLimit ? 'border-on-dark-soft' : 'border-hairline-dark focus-within:border-on-dark-soft'
+        className={`relative flex items-end gap-2 rounded-3xl border bg-canvas px-3 py-2 transition-colors shadow-sm ${
+          overLimit ? 'border-muted' : 'border-hairline focus-within:border-ink'
         }`}
       >
         <textarea
@@ -76,7 +75,7 @@ export function ChatInput({
           rows={1}
           maxLength={MAX_LEN + 200}
           disabled={disabled && !pending}
-          className="flex-1 bg-transparent border-none outline-none resize-none text-body-md text-on-dark placeholder:text-on-dark-soft disabled:opacity-50 py-1.5 px-1 max-h-48 overflow-y-auto"
+          className="flex-1 bg-transparent border-none outline-none resize-none text-body-md text-ink placeholder:text-muted-soft disabled:opacity-50 py-1.5 px-1 max-h-48 overflow-y-auto scrollbar-hide"
         />
         {pending && onCancel ? (
           <IconButton
@@ -101,10 +100,10 @@ export function ChatInput({
           </IconButton>
         )}
       </div>
-      <div className="flex items-center justify-between mt-2 px-2 text-caption text-on-dark-soft">
-        <span className="opacity-60">Enter 로 보내기 · Shift+Enter 줄바꿈</span>
+      <div className="flex items-center justify-between mt-2 px-2 text-caption text-muted-soft">
+        <span className="opacity-70">Enter 로 보내기 · Shift+Enter 줄바꿈</span>
         {value.length > 200 ? (
-          <span className={`tabular ${overLimit ? 'text-on-dark' : 'opacity-60'}`}>
+          <span className={`tabular ${overLimit ? 'text-ink' : 'opacity-70'}`}>
             {value.length} / {MAX_LEN}
           </span>
         ) : null}

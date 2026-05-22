@@ -3,9 +3,8 @@
 import { forwardRef } from 'react'
 
 /**
- * 다크 패널 안에서 사용할 원형 아이콘 버튼.
- * 의도: 챗 입력창 우측 send 버튼, 메시지 호버 시 복사 버튼 등 공통 패턴 통일.
- * 안 만들면 매번 className 중복 + hover/disabled 미스매치 발생.
+ * 라이트 패널용 원형 아이콘 버튼.
+ * 의도: 챗 입력창 send 버튼, 메시지 호버 시 복사 버튼 등 공통 패턴 통일.
  */
 
 type Variant = 'solid' | 'ghost'
@@ -17,12 +16,12 @@ const sizeMap: Record<Size, string> = {
 }
 
 const variantMap: Record<Variant, string> = {
-  // solid: 밝은 ink-on-canvas — 주요 액션 (send 등). 다크 패널 안에서 대비 최대.
+  // solid: ink 채움 + canvas 텍스트 — 주요 액션 (send 등). 라이트 배경에 강한 대비.
   solid:
-    'bg-on-dark text-surface-dark hover:bg-on-dark/90 disabled:bg-on-dark-soft disabled:cursor-not-allowed',
-  // ghost: 호버 시에만 배경. 보조 액션 (copy, cancel 등).
+    'bg-ink text-canvas hover:bg-body-strong disabled:bg-disabled disabled:cursor-not-allowed',
+  // ghost: 호버 시 surface-card 배경. 보조 액션.
   ghost:
-    'text-on-dark-soft hover:text-on-dark hover:bg-surface-dark-elevated disabled:opacity-40 disabled:cursor-not-allowed',
+    'text-muted hover:text-ink hover:bg-surface-card disabled:opacity-40 disabled:cursor-not-allowed',
 }
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

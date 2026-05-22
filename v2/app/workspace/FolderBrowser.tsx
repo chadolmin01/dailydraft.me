@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import {
   Folder,
   FileText,
@@ -59,6 +59,8 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
       if (!res.ok) throw new Error('폴더 조회 실패')
       return res.json()
     },
+    // 하위 폴더 진입 시 직전 폴더의 목록을 그대로 보여주다 부드럽게 교체 → 점멸 방지.
+    placeholderData: keepPreviousData,
   })
 
   const enterSubfolder = (item: DriveItem) => {
@@ -76,6 +78,10 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
       ]
     : []
 
+  // 점멸 방지: 폴더 진입 직후 placeholderData 로 직전 목록이 살아 있고, isFetching 만 true.
+  // 본문은 그대로 두고 미세 dim 만 줘서 갱신 중임을 알림.
+  const refetching = query.isFetching && !query.isLoading
+
   return (
     <div className="rounded-lg border border-hairline bg-canvas overflow-hidden">
       {/* 툴바: 브레드크럼 + 카운트 */}
@@ -88,9 +94,16 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
         ) : null}
       </div>
 
-      {/* 본문 */}
+      {/* 본문 — 초기 로딩은 스켈레톤, 재페치는 본문 dim */}
       {query.isLoading ? (
-        <div className="px-4 py-8 text-center text-body-sm text-muted">불러오는 중…</div>
+        <ul className="divide-y divide-hairline-soft" aria-hidden>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <li key={i} className="px-4 py-3 flex items-center gap-3">
+              <span className="h-4 w-4 rounded bg-surface-card opacity-60" />
+              <span className="h-3 flex-1 max-w-xs rounded bg-surface-card opacity-50" />
+            </li>
+          ))}
+        </ul>
       ) : null}
 
       {query.isError ? (
@@ -105,7 +118,7 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
       ) : null}
 
       {query.data && allItems.length > 0 ? (
-        <>
+        <div className={refetching ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {/* 헤더 행 */}
           <div className="hidden md:grid grid-cols-[1fr_120px_110px_90px] gap-4 px-4 py-2 border-b border-hairline-soft text-caption text-muted-soft">
             <div>이름</div>
@@ -160,7 +173,7 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
               </li>
             ))}
           </ul>
-        </>
+        </div>
       ) : null}
     </div>
   )

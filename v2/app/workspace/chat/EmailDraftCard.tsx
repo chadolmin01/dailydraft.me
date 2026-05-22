@@ -22,17 +22,17 @@ export function EmailDraftCard({ draft }: { draft: EmailDraftRef }) {
       href={draft.url}
       target="_blank"
       rel="noreferrer"
-      className="chat-bubble-in block rounded-2xl bg-surface-dark-elevated border border-hairline-dark px-4 py-3 hover:border-on-dark-soft hover:bg-surface-dark-soft transition-colors group"
+      className="chat-bubble-in block rounded-2xl bg-canvas border border-hairline px-4 py-3 hover:border-muted hover:bg-surface-soft transition-colors group"
     >
       <div className="flex items-center gap-3">
-        <div className="h-9 w-9 rounded-full bg-surface-dark grid place-items-center shrink-0 border border-hairline-dark">
-          <Mail size={16} className="text-on-dark-soft group-hover:text-on-dark transition-colors" />
+        <div className="h-9 w-9 rounded-full bg-surface-card grid place-items-center shrink-0 border border-hairline">
+          <Mail size={16} className="text-muted group-hover:text-ink transition-colors" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-body-sm text-on-dark font-medium">{label}</p>
-          <p className="text-caption text-on-dark-soft mt-0.5 truncate">{sub}</p>
+          <p className="text-body-sm text-ink font-medium">{label}</p>
+          <p className="text-caption text-muted-soft mt-0.5 truncate">{sub}</p>
         </div>
-        <ExternalLink size={14} className="text-on-dark-soft shrink-0" />
+        <ExternalLink size={14} className="text-muted-soft shrink-0" />
       </div>
     </a>
   )

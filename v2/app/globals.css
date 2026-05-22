@@ -288,6 +288,15 @@ h1, h2, h3, h4 {
   animation: scale-in var(--duration-fast) var(--ease-out);
 }
 
+/* 스크롤바 숨김 (visual only, 스크롤 자체는 동작). 챗 패널에 적용. */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legacy */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
+
 /* 챗 말풍선 — 200ms fade + 8px slide-up. prefers-reduced-motion 존중. */
 @keyframes bubble-in {
   from {
@@ -324,7 +333,7 @@ h1, h2, h3, h4 {
   animation-delay: 0.3s;
 }
 
-/* 챗 마크다운 렌더 — dark 패널 안에서 가독성 유지. body 텍스트 위주 + 인라인 강조. */
+/* 챗 마크다운 렌더 — 라이트(cream) 패널 기준. assistant 텍스트는 ink 톤. */
 .chat-markdown p {
   margin: 0 0 var(--space-2) 0;
   line-height: 1.65;
@@ -333,7 +342,7 @@ h1, h2, h3, h4 {
   margin-bottom: 0;
 }
 .chat-markdown strong {
-  color: var(--color-on-dark);
+  color: var(--color-ink);
   font-weight: 600;
 }
 .chat-markdown em {
@@ -342,13 +351,13 @@ h1, h2, h3, h4 {
 .chat-markdown code {
   font-family: var(--font-mono);
   font-size: 0.9em;
-  background: var(--color-surface-dark-elevated);
+  background: var(--color-surface-strong);
   padding: 1px 4px;
   border-radius: var(--radius-xs);
-  color: var(--color-on-dark);
+  color: var(--color-ink);
 }
 .chat-markdown pre {
-  background: var(--color-surface-dark-elevated);
+  background: var(--color-surface-card);
   padding: var(--space-3);
   border-radius: var(--radius-sm);
   overflow-x: auto;
@@ -359,12 +368,12 @@ h1, h2, h3, h4 {
   padding: 0;
 }
 .chat-markdown a {
-  color: var(--color-on-dark);
+  color: var(--color-ink);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 .chat-markdown a:hover {
-  color: var(--color-on-dark-soft);
+  color: var(--color-muted);
 }
 .chat-markdown ul,
 .chat-markdown ol {
@@ -375,17 +384,17 @@ h1, h2, h3, h4 {
   margin: 2px 0;
 }
 .chat-markdown blockquote {
-  border-left: 2px solid var(--color-on-dark-soft);
+  border-left: 2px solid var(--color-muted-soft);
   padding-left: var(--space-3);
   margin: var(--space-2) 0;
-  color: var(--color-on-dark-soft);
+  color: var(--color-muted);
 }
 .chat-markdown h1, .chat-markdown h2, .chat-markdown h3 {
   font-family: var(--font-body);
   font-weight: 600;
   font-size: var(--text-body-md);
   margin: var(--space-3) 0 var(--space-1) 0;
-  color: var(--color-on-dark);
+  color: var(--color-ink);
   letter-spacing: 0;
 }
 .chat-markdown table {
@@ -398,5 +407,5 @@ h1, h2, h3, h4 {
 .chat-markdown td {
   text-align: left;
   padding: 4px 8px;
-  border-bottom: 1px solid var(--color-hairline-dark);
+  border-bottom: 1px solid var(--color-hairline);
 }

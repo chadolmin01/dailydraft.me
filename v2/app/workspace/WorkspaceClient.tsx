@@ -1,13 +1,24 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useAuth } from '@/src/context/AuthContext'
 import { extractDriveFolderId, extractSheetId } from '@/src/lib/parsers/google-url'
-import { Trash2, Folder as FolderIcon, Search, Plus } from 'lucide-react'
+import {
+  Trash2,
+  Folder as FolderIcon,
+  Search,
+  Plus,
+  HelpCircle,
+  Settings,
+  LogOut,
+  Download,
+  Search as SearchIcon,
+} from 'lucide-react'
 import { DrivePickerButton } from './DrivePickerButton'
 import { ChatPanel } from './ChatPanel'
 import { FolderBrowser } from './FolderBrowser'
+import { OverflowMenu, type MenuItem } from './chat/OverflowMenu'
 
 interface Folder {
   id: string
@@ -103,6 +114,8 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
       if (!res.ok) throw new Error('매트릭스 조회 실패')
       return res.json()
     },
+    // 폴더 전환 시 이전 매트릭스를 잠깐 유지 → 우측 영역 점멸 방지.
+    placeholderData: keepPreviousData,
   })
 
   const addFolder = useMutation({
@@ -208,38 +221,76 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
     return list
   })()
 
+  // chat-history 캐시를 헤더에서도 구독 — overflow menu 가 내보내기/지우기 표시 여부 판단.
+  // ChatPanel 과 같은 queryKey 라 dedupe.
+  const chatHistory = useQuery({
+    queryKey: ['chat-history'],
+    enabled: false, // ChatPanel 이 실제 fetch. 헤더는 캐시 구독만.
+  }) as { data?: { rows: unknown[] } }
+  const chatRowCount = chatHistory.data?.rows.length ?? 0
+
+  const menuItems: MenuItem[] = [
+    { kind: 'label', label: userEmail ?? '로그인됨', hint: '계정' },
+    { kind: 'divider' },
+    {
+      label: '도움말',
+      icon: <HelpCircle size={14} />,
+      onClick: () => { window.location.href = '/help' },
+    },
+    {
+      label: '설정',
+      icon: <Settings size={14} />,
+      onClick: () => { window.location.href = '/settings' },
+    },
+  ]
+
+  if (chatRowCount >= 5) {
+    menuItems.push({
+      label: '대화 내 검색',
+      icon: <SearchIcon size={14} />,
+      onClick: () => window.dispatchEvent(new Event('draft:chat-search')),
+    })
+  }
+  if (chatRowCount > 0) {
+    menuItems.push(
+      {
+        label: '대화 내보내기',
+        icon: <Download size={14} />,
+        onClick: () => window.dispatchEvent(new Event('draft:chat-export')),
+      },
+      {
+        label: '대화 지우기',
+        icon: <Trash2 size={14} />,
+        onClick: () => window.dispatchEvent(new Event('draft:chat-clear')),
+        danger: true,
+      },
+    )
+  }
+  menuItems.push(
+    { kind: 'divider' },
+    {
+      label: '로그아웃',
+      icon: <LogOut size={14} />,
+      onClick: () => signOut(),
+      danger: true,
+    },
+  )
+
   return (
     <div className="min-h-screen md:h-screen flex flex-col md:grid md:grid-cols-[var(--layout-chat-width)_1fr] bg-canvas">
       <a href="#workspace-main" className="sr-only focus:not-sr-only">
         본문으로 건너뛰기
       </a>
-      {/* 좌측 (모바일에서는 상단) — 챗봇 패널 (다크) */}
-      <aside className="bg-surface-dark text-on-dark border-b md:border-b-0 md:border-r border-hairline-dark flex flex-col md:h-screen max-h-[60vh] md:max-h-none" aria-label="챗봇">
-        <header className="px-5 py-5 border-b border-hairline-dark flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="text-title-md text-on-dark truncate">{foldersQuery.data?.workspace.name ?? 'Draft'}</h2>
-            <p className="text-caption text-on-dark-soft mt-1 truncate">{userEmail}</p>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <a
-              href="/help"
-              className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
-            >
-              도움말
-            </a>
-            <a
-              href="/settings"
-              className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
-            >
-              설정
-            </a>
-            <button
-              onClick={() => signOut()}
-              className="text-caption text-on-dark-soft hover:text-on-dark transition-colors"
-            >
-              로그아웃
-            </button>
-          </div>
+      {/* 좌측 (모바일에서는 상단) — 챗봇 패널 (라이트, 우측과 동일 톤) */}
+      <aside
+        className="bg-canvas text-ink border-b md:border-b-0 md:border-r border-hairline flex flex-col md:h-screen max-h-[60vh] md:max-h-none"
+        aria-label="챗봇"
+      >
+        <header className="px-4 py-3 border-b border-hairline flex items-center justify-between gap-2">
+          <h2 className="text-title-md text-ink truncate min-w-0">
+            {foldersQuery.data?.workspace.name ?? 'Draft'}
+          </h2>
+          <OverflowMenu label="계정과 대화 메뉴" items={menuItems} />
         </header>
 
         <ChatPanel folderId={selectedFolderId} folderName={selectedFolder?.name} />
@@ -775,6 +826,8 @@ function FolderCard({
   const stats = useQuery({
     queryKey: ['folder-stats', folder.id],
     staleTime: 60_000,
+    // 점멸 방지: 폴더 재선택/리스트 재정렬 시 직전 stats 를 유지하다 부드럽게 교체.
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const res = await fetch(`/api/folders/${folder.id}/stats`)
       if (!res.ok) throw new Error('stats')
@@ -823,14 +876,20 @@ function FolderCard({
             />
           ) : null}
         </div>
-        {/* 메타 정보 영역 */}
+        {/* 메타 정보 영역 — 점멸 방지: stats 가 없는 동안 텍스트 대신 동일 폭의 스켈레톤 바 */}
         <div className="bg-canvas p-4 space-y-1">
           <p className="text-body-md text-ink font-medium truncate">{folder.name}</p>
-          <p className="text-caption text-muted-soft tabular truncate">
-            {stats.data
-              ? <>파일 {stats.data.file_count}개 {stats.data.latest_modified ? `· ${formatRelative(stats.data.latest_modified)}` : ''}</>
-              : '불러오는 중…'}
-          </p>
+          {stats.data ? (
+            <p className="text-caption text-muted-soft tabular truncate">
+              파일 {stats.data.file_count}개
+              {stats.data.latest_modified ? ` · ${formatRelative(stats.data.latest_modified)}` : ''}
+            </p>
+          ) : (
+            <span
+              className="block h-3 w-28 rounded bg-surface-card opacity-60"
+              aria-hidden
+            />
+          )}
         </div>
       </button>
       {/* 휴지통 — 호버 시 우상단 (라벨 위) */}
@@ -860,7 +919,7 @@ function FolderCardStats({ folderId }: { folderId: string }) {
   })
 
   if (query.isLoading || query.isError || !query.data) {
-    return <p className="text-caption text-muted-soft">파일 정보 불러오는 중…</p>
+    return <span className="inline-block h-3 w-24 rounded bg-surface-card opacity-60" aria-hidden />
   }
 
   const { file_count, latest_modified } = query.data
