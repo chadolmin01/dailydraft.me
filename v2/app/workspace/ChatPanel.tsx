@@ -144,14 +144,31 @@ export function ChatPanel({ folderId, folderName }: Props) {
       }
       return res.json()
     },
-    onMutate: (message) => {
+    // 의도: LLM 응답이 10~30초 걸리는 동안 사용자가 본인 말풍선이 안 보여서 "안 보냈나?" 의심하지 않게.
+    //       optimistic 으로 chat-history 캐시에 user row 즉시 push, onSuccess 에서 invalidate 로 실제 row 교체.
+    onMutate: async (message) => {
       setLastUserMessage(message)
+      await qc.cancelQueries({ queryKey: ['chat-history'] })
+      const prev = qc.getQueryData<{ rows: ChatRow[] }>(['chat-history'])
+      const optimisticRow: ChatRow = {
+        id: `optimistic-${Date.now()}`,
+        role: 'user',
+        content: [{ type: 'text', text: message }],
+        created_at: new Date().toISOString(),
+        folder_id: folderId,
+      }
+      qc.setQueryData<{ rows: ChatRow[] }>(['chat-history'], {
+        rows: [...(prev?.rows ?? []), optimisticRow],
+      })
+      return { prev }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['chat-history'] })
       abortRef.current = null
     },
-    onError: () => {
+    onError: (_err, _message, context) => {
+      // 실패 시 optimistic row 롤백 — error UI 가 따로 retry 제공.
+      if (context?.prev) qc.setQueryData(['chat-history'], context.prev)
       abortRef.current = null
     },
   })
