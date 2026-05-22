@@ -1,7 +1,7 @@
 // POST /api/sync/drive
 //
-// 매니저가 [지금 동기화] 클릭 시 수동 트리거.
-// /api/cron/drive-sync 와 동일 로직이지만 본인 워크스페이스 한정 + user session 인증.
+// 매니저 수동 트리거 ([지금 동기화] 버튼).
+// cron 과 동일 로직이지만 본인 워크스페이스 한정 + user session 인증.
 
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/src/lib/supabase/server'
@@ -10,10 +10,7 @@ import { ApiResponse } from '@/src/lib/api-utils'
 import { getOrCreateWorkspace } from '@/src/lib/workspace'
 import { getValidAccessToken, GoogleAuthRequiredError } from '@/src/lib/google/tokens'
 import { listFolderFiles } from '@/src/lib/google/drive'
-import { downloadFile } from '@/src/lib/google/drive-download'
-import { parseBuffer } from '@/src/lib/parsers/binary-parser'
-import { extractFromText } from '@/glossary/pipeline/task_extractor'
-import type { Json } from '@/src/types/database'
+import { processDriveFile } from '@/src/lib/m6/process-pipeline'
 
 export const maxDuration = 60
 
@@ -67,7 +64,7 @@ export async function POST() {
       for (const file of candidates) {
         if (processedTotal >= MAX_FILES_PER_RUN) break
         try {
-          await processOne({
+          await processDriveFile({
             admin,
             workspaceId: workspace.id,
             folderId,
@@ -102,122 +99,4 @@ export async function POST() {
     folders_seen: results.length,
     results,
   })
-}
-
-async function processOne(opts: {
-  admin: ReturnType<typeof createAdminClient>
-  workspaceId: string
-  folderId: string
-  accessToken: string
-  driveFileId: string
-  filename: string
-  mimeType: string
-  sizeBytes: number | null
-  driveModifiedAt: string | null
-}): Promise<void> {
-  const { admin } = opts
-
-  const { data: pending, error: pendingErr } = await admin
-    .from('processed_files')
-    .upsert(
-      {
-        workspace_id: opts.workspaceId,
-        folder_id: opts.folderId,
-        drive_file_id: opts.driveFileId,
-        filename: opts.filename,
-        mime_type: opts.mimeType,
-        size_bytes: opts.sizeBytes,
-        drive_modified_at: opts.driveModifiedAt,
-        parsing_completed_at: null,
-        parsing_error: null,
-        atom_count: 0,
-        relation_count: 0,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'workspace_id,drive_file_id' },
-    )
-    .select('id')
-    .single()
-  if (pendingErr || !pending) throw new Error(pendingErr?.message ?? 'upsert 실패')
-  const processedFileId = pending.id as string
-
-  await admin.from('extracted_relations').delete().eq('processed_file_id', processedFileId)
-  await admin.from('extracted_atoms').delete().eq('processed_file_id', processedFileId)
-
-  try {
-    const { buffer, effectiveMime } = await downloadFile(opts.accessToken, opts.driveFileId, opts.mimeType)
-    const parsed = await parseBuffer(buffer, effectiveMime)
-    if (!parsed.text.trim()) {
-      await admin
-        .from('processed_files')
-        .update({
-          parsing_error: '추출된 텍스트가 비어 있습니다',
-          parsing_completed_at: new Date().toISOString(),
-        })
-        .eq('id', processedFileId)
-      return
-    }
-    const extraction = await extractFromText(parsed.text, opts.driveFileId)
-
-    const atomRows = extraction.atoms.map(a => ({
-      workspace_id: opts.workspaceId,
-      processed_file_id: processedFileId,
-      local_id: a.id,
-      type: a.type,
-      content: a.content,
-      attributes: a.attributes as unknown as Json,
-      provenance: a.provenance as unknown as Json,
-      confidence: a.confidence,
-    }))
-
-    const localToDbId = new Map<string, string>()
-    if (atomRows.length > 0) {
-      const { data: inserted, error: aErr } = await admin
-        .from('extracted_atoms')
-        .insert(atomRows)
-        .select('id, local_id')
-      if (aErr) throw new Error(`atom insert: ${aErr.message}`)
-      for (const row of inserted ?? []) localToDbId.set(row.local_id, row.id)
-    }
-
-    const relRows = extraction.relations
-      .map(r => {
-        const f = localToDbId.get(r.from)
-        const t = localToDbId.get(r.to)
-        if (!f || !t) return null
-        return {
-          workspace_id: opts.workspaceId,
-          processed_file_id: processedFileId,
-          from_atom_id: f,
-          to_atom_id: t,
-          type: r.type,
-          confidence: r.confidence,
-        }
-      })
-      .filter((r): r is NonNullable<typeof r> => r !== null)
-
-    if (relRows.length > 0) {
-      const { error: rErr } = await admin.from('extracted_relations').insert(relRows)
-      if (rErr) throw new Error(`relation insert: ${rErr.message}`)
-    }
-
-    await admin
-      .from('processed_files')
-      .update({
-        parsed_text: parsed.text.slice(0, 200_000),
-        parsing_completed_at: new Date().toISOString(),
-        parsing_error: null,
-        atom_count: extraction.atoms.length,
-        relation_count: relRows.length,
-      })
-      .eq('id', processedFileId)
-  } catch (e) {
-    await admin
-      .from('processed_files')
-      .update({
-        parsing_error: (e as Error).message.slice(0, 500),
-        parsing_completed_at: new Date().toISOString(),
-      })
-      .eq('id', processedFileId)
-  }
 }
