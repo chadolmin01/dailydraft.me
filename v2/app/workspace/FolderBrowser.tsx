@@ -557,7 +557,11 @@ interface RelationDetail {
 }
 
 interface ViewerResponse {
-  file: ProcessedFile & { drive_modified_at: string | null; size_bytes: number | null }
+  file: ProcessedFile & {
+    drive_modified_at: string | null
+    size_bytes: number | null
+    parsed_text: string | null
+  }
   atoms: AtomDetail[]
   relations: RelationDetail[]
 }
@@ -766,6 +770,21 @@ function AtomViewer({
           {/* Relations 섹션 — 추출된 Triple 시각화 */}
           {query.data && query.data.relations.length > 0 ? (
             <RelationsSection atoms={query.data.atoms} relations={query.data.relations} />
+          ) : null}
+
+          {/* 추출 검증용 원문 텍스트 (collapsible) — 매니저가 LLM 이 무엇을 읽었는지 확인 */}
+          {query.data?.file.parsed_text ? (
+            <details className="pt-2 border-t border-hairline-soft">
+              <summary className="text-title-sm text-ink cursor-pointer hover:text-muted transition-colors">
+                추출 원문 보기
+                <span className="text-caption text-muted-soft ml-2 tabular">
+                  {query.data.file.parsed_text.length.toLocaleString()} 자
+                </span>
+              </summary>
+              <pre className="mt-2 max-h-80 overflow-auto bg-surface-soft border border-hairline rounded-md p-3 text-caption text-body whitespace-pre-wrap font-body">
+                {query.data.file.parsed_text}
+              </pre>
+            </details>
           ) : null}
         </div>
       </div>

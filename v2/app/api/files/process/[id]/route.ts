@@ -51,7 +51,7 @@ export async function GET(_request: NextRequest, ctx: { params: Promise<{ id: st
   const { data: file, error: fileErr } = await supabase
     .from('processed_files')
     .select(
-      'id, drive_file_id, filename, mime_type, size_bytes, drive_modified_at, parsing_completed_at, parsing_error, atom_count, relation_count, updated_at',
+      'id, drive_file_id, filename, mime_type, size_bytes, drive_modified_at, parsing_completed_at, parsing_error, atom_count, relation_count, updated_at, parsed_text',
     )
     .eq('id', id)
     .eq('workspace_id', workspace.id)
