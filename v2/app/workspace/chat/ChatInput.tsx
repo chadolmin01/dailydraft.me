@@ -44,6 +44,21 @@ export function ChatInput({
     ta.style.height = `${Math.min(ta.scrollHeight, max)}px`
   }, [value])
 
+  // "/" 단축키로 챗 입력에 포커스 — GitHub/Slack 스타일.
+  // 의도: 매니저가 매트릭스/폴더 보다가 즉시 질문 입력. 입력 중인 다른 input/textarea 안에서는 무시.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return
+      const target = e.target as HTMLElement | null
+      const tag = target?.tagName.toLowerCase()
+      if (tag === 'input' || tag === 'textarea' || target?.isContentEditable) return
+      e.preventDefault()
+      textareaRef.current?.focus()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   const trimmed = value.trim()
   const canSend = trimmed.length > 0 && !pending && !disabled
   const overLimit = value.length > MAX_LEN
@@ -101,7 +116,10 @@ export function ChatInput({
         )}
       </div>
       <div className="flex items-center justify-between mt-2 px-2 text-caption text-muted-soft">
-        <span className="opacity-70">Enter 로 보내기 · Shift+Enter 줄바꿈</span>
+        <span className="opacity-70">
+          Enter 로 보내기 · Shift+Enter 줄바꿈 ·{' '}
+          <kbd className="px-1 py-0.5 rounded bg-surface-card text-ink/80 text-[10px] font-mono">/</kbd> 로 입력 포커스
+        </span>
         {value.length > 200 ? (
           <span className={`tabular ${overLimit ? 'text-ink' : 'opacity-70'}`}>
             {value.length} / {MAX_LEN}
