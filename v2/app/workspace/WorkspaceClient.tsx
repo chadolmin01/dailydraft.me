@@ -1741,14 +1741,24 @@ function AtomDigest({ folderId, folderName }: { folderId: string; folderName: st
         </p>
         <div className="flex items-center gap-2">
           {sortedAtoms.length > 0 ? (
-            <button
-              type="button"
-              onClick={() => downloadAtomsCsv(folderName, sortedAtoms)}
-              className="text-caption text-muted hover:text-ink transition-colors"
-              title="현재 보이는 항목을 CSV 로 저장 (Excel 한글 지원)"
-            >
-              CSV 다운로드
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => downloadAtomsCsv(folderName, sortedAtoms)}
+                className="text-caption text-muted hover:text-ink transition-colors"
+                title="현재 보이는 항목을 CSV 로 저장 (Excel 한글 지원)"
+              >
+                CSV
+              </button>
+              <a
+                href={`/api/atoms/export?folder_id=${folderId}`}
+                download
+                className="text-caption text-muted hover:text-ink transition-colors"
+                title="이 폴더의 모든 atom + relation 을 JSON 으로 (관계 포함)"
+              >
+                JSON
+              </a>
+            </>
           ) : null}
           <button
             type="button"
