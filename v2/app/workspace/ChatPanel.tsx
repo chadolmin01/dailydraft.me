@@ -327,14 +327,7 @@ export function ChatPanel({ folderId, folderName }: Props) {
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* 폴더 컨텍스트 + 검색 입력 (검색 토글 시) */}
-      {folderId && folderName ? (
-        <div className="px-4 py-2 border-b border-hairline">
-          <p className="text-caption text-muted-soft truncate">
-            현재 폴더 <span className="text-ink">{folderName}</span>
-          </p>
-        </div>
-      ) : null}
+      {/* 폴더 컨텍스트 — 위에서 제거, 아래 입력창 위에 path 스타일로 표시 (ChatInput contextLabel). */}
 
       {showSearch ? (
         <div className="px-4 py-2 border-b border-hairline flex items-center gap-2">
@@ -480,6 +473,7 @@ export function ChatPanel({ folderId, folderName }: Props) {
         placeholder={folderId ? '메시지를 입력하세요' : '폴더 없이도 일반 대화는 가능합니다'}
         selectedModel={selectedModel}
         onChangeModel={handleChangeModel}
+        contextLabel={folderId && folderName ? folderName : null}
       />
     </div>
   )

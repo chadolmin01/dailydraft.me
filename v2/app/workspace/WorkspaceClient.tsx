@@ -71,7 +71,7 @@ interface MatrixResponse {
   rosterError?: string
 }
 
-type FolderTab = 'recent' | 'all'
+type FolderTab = 'recent' | 'all' | 'activity'
 
 export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   const { signOut } = useAuth()
@@ -326,8 +326,9 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
         <ChatPanel folderId={selectedFolderId} folderName={selectedFolder?.name} />
       </aside>
 
-      {/* 우측 (모바일에서는 하단) — 콘텐츠 (cream). 위아래 여백 슬림. */}
-      <main id="workspace-main" className="overflow-y-auto px-4 md:px-6 pt-3 md:pt-4 pb-6 md:h-screen" aria-label="폴더와 진행도">
+      {/* 우측 (모바일에서는 하단) — 콘텐츠 (cream). 상단 여백 0, 탭바가 첫 줄.
+          좌측 헤더 (py-2 + border-b) 와 우측 탭바 (py-2 + border-b) 가 같은 높이 정렬. */}
+      <main id="workspace-main" className="overflow-y-auto px-4 md:px-6 pb-6 md:h-screen" aria-label="폴더와 진행도">
         <div className="max-w-layout-content mx-auto space-y-5">
           {googleAuthBroken ? (
             <div className="rounded-lg border border-hairline bg-surface-soft p-5 flex items-start justify-between gap-4">
@@ -346,21 +347,17 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
-          {folders.length > 0 && !foldersQuery.isLoading ? (
-            <div className="grid md:grid-cols-2 gap-4">
-              <TodaysActivity folderIds={folders.map(f => f.id)} folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))} />
-              <UpcomingDeadlines folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))} />
-            </div>
-          ) : null}
-
-          {/* 탭 + 검색 + 연결 — 상단 컨트롤 바 */}
-          <div className="flex items-center justify-between gap-4 flex-wrap border-b border-hairline">
-            <div role="tablist" aria-label="폴더 보기" className="flex items-center gap-1 -mb-px">
+          {/* 탭 + 검색 + 연결 — 상단 컨트롤 바. py-2 로 좌측 헤더와 baseline 정렬. */}
+          <div className="flex items-center justify-between gap-4 flex-wrap border-b border-hairline py-2">
+            <div role="tablist" aria-label="폴더 보기" className="flex items-center gap-1 -mb-[9px]">
               <FolderTabHead active={folderTab === 'recent'} onClick={() => setFolderTab('recent')}>
                 최근
               </FolderTabHead>
               <FolderTabHead active={folderTab === 'all'} onClick={() => setFolderTab('all')}>
                 모든 폴더
+              </FolderTabHead>
+              <FolderTabHead active={folderTab === 'activity'} onClick={() => setFolderTab('activity')}>
+                진행 상황
               </FolderTabHead>
             </div>
             <div className="flex items-center gap-2">
@@ -429,7 +426,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
-          {folders.length > 0 && filteredFolders.length === 0 ? (
+          {folderTab !== 'activity' && folders.length > 0 && filteredFolders.length === 0 ? (
             <div className="rounded-lg border border-hairline bg-surface-soft p-6 text-center text-body-sm text-muted">
               {folderSearch.trim()
                 ? `"${folderSearch}" 와 일치하는 폴더가 없습니다.`
@@ -437,7 +434,7 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
             </div>
           ) : null}
 
-          {filteredFolders.length > 0 ? (
+          {folderTab !== 'activity' && filteredFolders.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredFolders.map(folder => (
                 <FolderCard
@@ -452,6 +449,26 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
                 />
               ))}
             </div>
+          ) : null}
+
+          {/* 진행 상황 탭 — 오늘의 활동 + 다가오는 마감을 한 곳에 */}
+          {folderTab === 'activity' && folders.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-4">
+              <TodaysActivity
+                folderIds={folders.map(f => f.id)}
+                folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))}
+              />
+              <UpcomingDeadlines
+                folderNames={Object.fromEntries(folders.map(f => [f.id, f.name]))}
+              />
+            </div>
+          ) : null}
+
+          {/* 진행 상황 탭 — 둘 다 비어있을 때 안내 */}
+          {folderTab === 'activity' && folders.length === 0 ? (
+            <p className="text-body-sm text-muted">
+              연결된 폴더가 없습니다. 먼저 폴더를 연결해 주세요.
+            </p>
           ) : null}
 
           {selectedFolder?.drive_folder_id ? (
@@ -800,7 +817,17 @@ function TodaysActivity({ folderNames }: { folderIds: string[]; folderNames: Rec
     }
   }
 
-  if (recent.length === 0) return null
+  if (recent.length === 0) {
+    return (
+      <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
+        <h3 className="text-title-sm text-ink flex items-center gap-2">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-muted-soft" />
+          오늘의 활동
+        </h3>
+        <p className="text-caption text-muted-soft">오늘 새로 들어온 파일이 없습니다.</p>
+      </section>
+    )
+  }
 
   return (
     <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
@@ -1872,8 +1899,21 @@ function UpcomingDeadlines({ folderNames }: { folderNames: Record<string, string
     .sort((a, b) => (a.due ?? '').localeCompare(b.due ?? ''))
     .slice(0, 5)
 
-  // 비어있을 때는 위젯 자체를 숨김 (사용자 피드백 — 빈 상태 메시지가 시각적 노이즈).
-  if (q.isLoading || upcoming.length === 0) return null
+  if (q.isLoading || upcoming.length === 0) {
+    return (
+      <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">
+        <h3 className="text-title-sm text-ink flex items-center gap-2">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-muted-soft" />
+          다가오는 마감
+        </h3>
+        <p className="text-caption text-muted-soft">
+          {q.isLoading
+            ? '불러오는 중…'
+            : '예정된 마감이 없습니다 (처리된 파일에 마감 정보 0).'}
+        </p>
+      </section>
+    )
+  }
 
   return (
     <section className="rounded-lg border border-hairline bg-canvas p-4 space-y-2">

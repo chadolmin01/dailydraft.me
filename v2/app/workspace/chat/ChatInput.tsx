@@ -23,6 +23,8 @@ interface ChatInputProps {
   placeholder: string
   selectedModel: string
   onChangeModel: (id: string) => void
+  /** Claude CLI 의 path 표시처럼 입력창 바로 위에 작게 노출. null 이면 숨김. */
+  contextLabel?: string | null
 }
 
 const MAX_LEN = 4000
@@ -37,6 +39,7 @@ export function ChatInput({
   placeholder,
   selectedModel,
   onChangeModel,
+  contextLabel,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -74,6 +77,12 @@ export function ChatInput({
 
   return (
     <form onSubmit={handleSubmit} className="px-4 pb-3 pt-2 border-t border-hairline">
+      {/* Claude CLI 의 path 표시처럼 — 입력 바로 위에 현재 폴더 작게. */}
+      {contextLabel ? (
+        <p className="px-1 mb-1 text-caption text-muted-soft truncate font-mono">
+          <span className="opacity-60">~/</span>{contextLabel}
+        </p>
+      ) : null}
       {/* pill: 슬림화 — px-3 py-1 (이전 py-2) + textarea py-1 (이전 py-1.5).
           글씨 높이에 맞춰 컴팩트. */}
       <div
