@@ -1634,12 +1634,14 @@ const ATOM_LABEL: Record<string, string> = {
   Reference: '참조', Definition: '정의', Entity: '주체',
 }
 
-function useFolderAtoms(folderId: string, type: string | null) {
+function useFolderAtoms(folderId: string, type: string | null, keyword: string) {
+  const trimmed = keyword.trim()
   return useQuery({
-    queryKey: ['folder-atoms', folderId, type],
+    queryKey: ['folder-atoms', folderId, type, trimmed],
     queryFn: async (): Promise<AtomDigestResponse> => {
-      const params = new URLSearchParams({ folder_id: folderId, limit: '50' })
+      const params = new URLSearchParams({ folder_id: folderId, limit: '100' })
       if (type) params.set('type', type)
+      if (trimmed) params.set('keyword', trimmed)
       const res = await fetch(`/api/atoms/search?${params}`)
       if (!res.ok) throw new Error('atom 조회 실패')
       return res.json()
@@ -1650,7 +1652,31 @@ function useFolderAtoms(folderId: string, type: string | null) {
 
 function AtomDigest({ folderId, folderName }: { folderId: string; folderName: string }) {
   const [filterType, setFilterType] = useState<string | null>(null)
-  const q = useFolderAtoms(folderId, filterType)
+  const [rawKeyword, setRawKeyword] = useState('')
+  const [keyword, setKeyword] = useState('')
+
+  // 300ms 디바운스 — 매니저가 타이핑 중에 매 keystroke 페치 방지.
+  useEffect(() => {
+    const t = setTimeout(() => setKeyword(rawKeyword), 300)
+    return () => clearTimeout(t)
+  }, [rawKeyword])
+
+  const q = useFolderAtoms(folderId, filterType, keyword)
+
+  // Deadline 필터일 때 attributes.due_at 으로 정렬 (다가오는 마감 먼저).
+  // 의도: 매니저가 가장 흔하게 묻는 "다음 마감" 질문에 즉답.
+  const sortedAtoms = (() => {
+    const atoms = q.data?.atoms ?? []
+    if (filterType !== 'Deadline') return atoms
+    return [...atoms].sort((a, b) => {
+      const aDue = typeof a.attributes?.due_at === 'string' ? a.attributes.due_at : ''
+      const bDue = typeof b.attributes?.due_at === 'string' ? b.attributes.due_at : ''
+      if (!aDue && !bDue) return 0
+      if (!aDue) return 1
+      if (!bDue) return -1
+      return aDue.localeCompare(bDue)
+    })
+  })()
 
   const counts = useQuery({
     queryKey: ['folder-atom-counts', folderId],
@@ -1681,6 +1707,16 @@ function AtomDigest({ folderId, folderName }: { folderId: string; folderName: st
           {folderName} · 처리된 파일 {counts.data?.processed_files ?? '…'}개 ·
           총 {counts.data?.total ?? '…'} 항목
         </p>
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-soft pointer-events-none" />
+          <input
+            type="search"
+            value={rawKeyword}
+            onChange={(e) => setRawKeyword(e.target.value)}
+            placeholder="내용 검색"
+            className="h-8 pl-8 pr-3 rounded-full bg-surface-soft border border-hairline text-caption text-ink placeholder:text-muted-soft focus:outline-none focus:border-ink w-44 transition-colors"
+          />
+        </div>
       </div>
 
       {/* 타입별 카운트 chip — 클릭하면 필터 */}
@@ -1703,33 +1739,48 @@ function AtomDigest({ folderId, folderName }: { folderId: string; folderName: st
           : null}
       </div>
 
+      {/* Deadline 필터일 때 정렬 힌트 */}
+      {filterType === 'Deadline' ? (
+        <p className="text-caption text-muted-soft">
+          due_at 오름차순 정렬 — 가까운 마감 먼저.
+        </p>
+      ) : null}
+
       {/* 항목 리스트 */}
       {q.isLoading ? (
         <p className="text-body-sm text-muted-soft">불러오는 중…</p>
       ) : null}
 
-      {q.data && q.data.atoms.length === 0 ? (
+      {q.data && sortedAtoms.length === 0 ? (
         <p className="text-body-sm text-muted">해당 조건의 항목이 없습니다.</p>
       ) : null}
 
       <ul className="divide-y divide-hairline-soft rounded-lg border border-hairline bg-canvas">
-        {q.data?.atoms.map((a) => (
-          <li key={`${a.from_file.processed_file_id}-${a.local_id}`} className="px-4 py-3 space-y-1">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-caption text-muted-soft tabular shrink-0">
-                {ATOM_LABEL[a.type] ?? a.type}
-              </span>
-              <span className="text-body-sm text-ink flex-1 min-w-0">{a.content}</span>
-              <span className="text-caption text-muted-soft tabular shrink-0">
-                {Math.round(a.confidence * 100)}%
-              </span>
-            </div>
-            <p className="text-caption text-muted-soft truncate">
-              {a.from_file.filename}
-              {a.location ? ` · ${a.location}` : ''}
-            </p>
-          </li>
-        ))}
+        {sortedAtoms.map((a) => {
+          const dueAt = typeof a.attributes?.due_at === 'string' ? a.attributes.due_at : null
+          return (
+            <li key={`${a.from_file.processed_file_id}-${a.local_id}`} className="px-4 py-3 space-y-1">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-caption text-muted-soft tabular shrink-0">
+                  {ATOM_LABEL[a.type] ?? a.type}
+                </span>
+                <span className="text-body-sm text-ink flex-1 min-w-0">{a.content}</span>
+                {dueAt ? (
+                  <span className="text-caption text-ink tabular shrink-0 border border-hairline rounded px-1.5 py-0.5">
+                    {dueAt}
+                  </span>
+                ) : null}
+                <span className="text-caption text-muted-soft tabular shrink-0">
+                  {Math.round(a.confidence * 100)}%
+                </span>
+              </div>
+              <p className="text-caption text-muted-soft truncate">
+                {a.from_file.filename}
+                {a.location ? ` · ${a.location}` : ''}
+              </p>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
