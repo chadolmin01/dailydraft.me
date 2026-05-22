@@ -15,6 +15,7 @@ import { ChatInput } from './chat/ChatInput'
 import { MessageBubble } from './chat/MessageBubble'
 import { TypingIndicator } from './chat/TypingIndicator'
 import { EmailDraftCard, extractEmailDrafts } from './chat/EmailDraftCard'
+import { AtomResultCard, extractAtomResults } from './chat/AtomResultCard'
 import { SuggestionCard } from './chat/SuggestionCard'
 import { ChipButton } from './chat/ChipButton'
 import { IconButton } from './chat/IconButton'
@@ -370,11 +371,15 @@ export function ChatPanel({ folderId, folderName }: Props) {
           {filteredRows.map((row) => {
             if (row.role === 'tool') {
               const drafts = extractEmailDrafts(row.content)
-              if (drafts.length === 0) return null
+              const atomBlocks = extractAtomResults(row.content)
+              if (drafts.length === 0 && atomBlocks.length === 0) return null
               return (
                 <div key={row.id} className="space-y-2">
+                  {atomBlocks.map((block, i) => (
+                    <AtomResultCard key={`${row.id}-a-${i}`} block={block} />
+                  ))}
                   {drafts.map((draft, i) => (
-                    <EmailDraftCard key={`${row.id}-${i}`} draft={draft} />
+                    <EmailDraftCard key={`${row.id}-d-${i}`} draft={draft} />
                   ))}
                 </div>
               )
