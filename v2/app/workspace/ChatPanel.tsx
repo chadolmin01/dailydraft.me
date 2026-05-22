@@ -43,7 +43,8 @@ interface Props {
   folderName?: string
 }
 
-const SUGGESTIONS = [
+// 처리된 파일이 없을 때 — 운영 흐름 (매트릭스/메일) 기반 추천
+const DEFAULT_SUGGESTIONS = [
   {
     icon: <Sparkles size={14} />,
     label: '전체 진행 상황을 한 줄로 요약해주세요.',
@@ -58,6 +59,25 @@ const SUGGESTIONS = [
     icon: <Mail size={14} />,
     label: '미제출 팀에 보낼 리마인드 메일 초안을 만들어주세요.',
     description: 'Gmail 초안함에 저장',
+  },
+] as const
+
+// 처리된 파일이 있을 때 — Atom 검색 기반 추천 (실제 추출된 내용으로)
+const ATOM_SUGGESTIONS = [
+  {
+    icon: <Sparkles size={14} />,
+    label: '다가오는 마감 3개를 빠른 순서로 알려주세요.',
+    description: '추출된 마감 항목에서',
+  },
+  {
+    icon: <ListChecks size={14} />,
+    label: '최근 결정사항을 정리해주세요.',
+    description: '보고서·회의록 기반',
+  },
+  {
+    icon: <Mail size={14} />,
+    label: '아직 답하지 않은 질문이 있는지 확인해주세요.',
+    description: '진행 중인 요청 추적',
   },
 ] as const
 
@@ -89,6 +109,20 @@ export function ChatPanel({ folderId, folderName }: Props) {
   })
 
   const rows = history.data?.rows ?? []
+
+  // 처리된 atom 이 1개라도 있으면 atom-aware suggestion 표시.
+  // 의도: 매니저가 새 기능을 자연어로 시도해보게 유도. atoms 없으면 기존 운영 흐름.
+  const atomCounts = useQuery({
+    queryKey: ['workspace-atom-counts-summary'],
+    queryFn: async (): Promise<{ total: number }> => {
+      const res = await fetch('/api/atoms/counts')
+      if (!res.ok) return { total: 0 }
+      return res.json()
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+  const hasAtoms = (atomCounts.data?.total ?? 0) > 0
+  const suggestions = hasAtoms ? ATOM_SUGGESTIONS : DEFAULT_SUGGESTIONS
 
   const send = useMutation({
     mutationFn: async (
@@ -315,7 +349,7 @@ export function ChatPanel({ folderId, folderName }: Props) {
                 </p>
               </div>
               <div className="space-y-2">
-                {SUGGESTIONS.map((s) => (
+                {suggestions.map((s) => (
                   <SuggestionCard
                     key={s.label}
                     icon={s.icon}
