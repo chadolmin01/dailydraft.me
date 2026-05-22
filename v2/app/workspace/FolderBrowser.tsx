@@ -220,6 +220,35 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
         <div className="px-4 py-12 text-center text-body-sm text-muted">빈 폴더입니다.</div>
       ) : null}
 
+      {/* 첫 진입 안내 — 처리된 파일이 0 이고 처리 가능한 파일이 있을 때만 */}
+      {query.data &&
+      processed.data &&
+      processed.data.files.filter(p => p.parsing_completed_at).length === 0 &&
+      unprocessedCount > 0 &&
+      !bulkPending ? (
+        <div className="px-4 py-3 border-b border-hairline-soft bg-surface-soft flex items-start justify-between gap-3">
+          <div className="flex items-start gap-2 min-w-0">
+            <Sparkles className="w-4 h-4 text-ink shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-body-sm text-ink">
+                이 폴더의 파일 {unprocessedCount}개에서 마감·요구사항·결정사항을 자동으로 뽑아낼 수 있습니다.
+              </p>
+              <p className="text-caption text-muted mt-0.5">
+                추출된 항목은 [내용 요약] 탭과 챗봇에서 바로 조회됩니다. 파일당 약 15초.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={runBulkProcess}
+            className="shrink-0 h-8 px-3 rounded-full bg-ink text-canvas text-caption font-medium hover:bg-body-strong transition-colors inline-flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3 h-3" />
+            시작
+          </button>
+        </div>
+      ) : null}
+
       {query.data && allItems.length > 0 ? (
         <div className={refetching ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {/* 헤더 행 — 데스크탑에 1열 추가 (Atom 처리 상태) */}
