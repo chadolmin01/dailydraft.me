@@ -83,6 +83,7 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
   })
 
   // 이 폴더의 처리 결과들 — drive_file_id 로 인덱싱.
+  // 30s 폴링으로 cron 처리 결과도 페이지 떠나지 않고 반영.
   const processed = useQuery({
     queryKey: ['processed-files', folderId],
     queryFn: async (): Promise<{ files: ProcessedFile[] }> => {
@@ -91,6 +92,7 @@ export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) 
       return res.json()
     },
     staleTime: 30_000,
+    refetchInterval: 30_000,
   })
   const processedMap = new Map<string, ProcessedFile>()
   for (const p of processed.data?.files ?? []) processedMap.set(p.drive_file_id, p)

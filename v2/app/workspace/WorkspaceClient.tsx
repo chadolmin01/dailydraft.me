@@ -1650,6 +1650,8 @@ function useFolderAtoms(folderId: string, type: string | null, keyword: string) 
       return res.json()
     },
     staleTime: 30_000,
+    // cron 이 백그라운드로 처리한 신규 atom 도 매니저가 페이지를 떠나지 않고 확인.
+    refetchInterval: 30_000,
   })
 }
 
@@ -1695,6 +1697,7 @@ function AtomDigest({ folderId, folderName }: { folderId: string; folderName: st
       return res.json()
     },
     staleTime: 30_000,
+    refetchInterval: 30_000,
   })
 
   if (counts.data?.processed_files === 0) {
