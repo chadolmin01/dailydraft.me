@@ -1029,7 +1029,7 @@ function FolderTabs({
           {unmatchedCount > 0 && !hasMatrixData ? (
             <ConventionHint unmatchedCount={unmatchedCount} unmatchedFiles={unmatchedFiles} />
           ) : null}
-          <FolderBrowser rootDriveFolderId={rootDriveFolderId} rootName={folderName} />
+          <FolderBrowser folderId={folder.id} rootDriveFolderId={rootDriveFolderId} rootName={folderName} />
         </div>
       ) : null}
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import {
   Folder,
   FileText,
@@ -14,6 +14,10 @@ import {
   ChevronRight,
   ArrowUpRight,
   Home,
+  Sparkles,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react'
 
 interface DriveItem {
@@ -37,11 +41,26 @@ interface PathSegment {
 }
 
 interface Props {
+  /** Draft 의 DB folder uuid — /api/files/process 호출 시 필요 */
+  folderId: string
   rootDriveFolderId: string
   rootName: string
 }
 
-export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
+interface ProcessedFile {
+  id: string
+  drive_file_id: string
+  filename: string
+  mime_type: string
+  parsing_completed_at: string | null
+  parsing_error: string | null
+  atom_count: number
+  relation_count: number
+  updated_at: string
+}
+
+export function FolderBrowser({ folderId, rootDriveFolderId, rootName }: Props) {
+  const qc = useQueryClient()
   const [path, setPath] = useState<PathSegment[]>([
     { id: rootDriveFolderId, name: rootName },
   ])
@@ -59,8 +78,45 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
       if (!res.ok) throw new Error('폴더 조회 실패')
       return res.json()
     },
-    // 하위 폴더 진입 시 직전 폴더의 목록을 그대로 보여주다 부드럽게 교체 → 점멸 방지.
     placeholderData: keepPreviousData,
+  })
+
+  // 이 폴더의 처리 결과들 — drive_file_id 로 인덱싱.
+  const processed = useQuery({
+    queryKey: ['processed-files', folderId],
+    queryFn: async (): Promise<{ files: ProcessedFile[] }> => {
+      const res = await fetch(`/api/files/process?folder_id=${folderId}`)
+      if (!res.ok) throw new Error('처리 결과 조회 실패')
+      return res.json()
+    },
+    staleTime: 30_000,
+  })
+  const processedMap = new Map<string, ProcessedFile>()
+  for (const p of processed.data?.files ?? []) processedMap.set(p.drive_file_id, p)
+
+  const processMutation = useMutation({
+    mutationFn: async (file: { id: string; name: string; mimeType: string; size?: string; modifiedTime: string }) => {
+      const res = await fetch('/api/files/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          folder_id: folderId,
+          drive_file_id: file.id,
+          filename: file.name,
+          mime_type: file.mimeType,
+          size_bytes: file.size ? Number(file.size) : undefined,
+          drive_modified_at: file.modifiedTime,
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error?.message ?? '처리 실패')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['processed-files', folderId] })
+    },
   })
 
   const enterSubfolder = (item: DriveItem) => {
@@ -119,11 +175,12 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
 
       {query.data && allItems.length > 0 ? (
         <div className={refetching ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
-          {/* 헤더 행 */}
-          <div className="hidden md:grid grid-cols-[1fr_120px_110px_90px] gap-4 px-4 py-2 border-b border-hairline-soft text-caption text-muted-soft">
+          {/* 헤더 행 — 데스크탑에 1열 추가 (Atom 처리 상태) */}
+          <div className="hidden md:grid grid-cols-[1fr_120px_110px_140px_90px] gap-4 px-4 py-2 border-b border-hairline-soft text-caption text-muted-soft">
             <div>이름</div>
             <div>종류</div>
             <div>수정</div>
+            <div>처리</div>
             <div className="text-right">크기</div>
           </div>
 
@@ -134,7 +191,7 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
                   <button
                     type="button"
                     onClick={() => enterSubfolder(item)}
-                    className="w-full grid md:grid-cols-[1fr_120px_110px_90px] gap-4 px-4 py-2.5 text-left hover:bg-surface-soft transition-colors items-center"
+                    className="w-full grid md:grid-cols-[1fr_120px_110px_140px_90px] gap-4 px-4 py-2.5 text-left hover:bg-surface-soft transition-colors items-center"
                   >
                     <Row
                       icon={<Folder className="w-4 h-4 text-ink shrink-0" />}
@@ -145,30 +202,39 @@ export function FolderBrowser({ rootDriveFolderId, rootName }: Props) {
                     <span className="hidden md:block text-body-sm text-muted-soft tabular">
                       {formatDate(item.modifiedTime)}
                     </span>
+                    <span className="hidden md:block text-body-sm text-muted-soft">—</span>
                     <span className="hidden md:block text-body-sm text-muted-soft text-right">—</span>
                   </button>
                 ) : (
-                  <a
-                    href={item.webViewLink ?? `https://drive.google.com/file/d/${item.id}/view`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="grid md:grid-cols-[1fr_120px_110px_90px] gap-4 px-4 py-2.5 hover:bg-surface-soft transition-colors items-center group"
-                  >
-                    <Row
-                      icon={<FileTypeIcon mimeType={item.mimeType} />}
-                      name={item.name}
-                      external
-                    />
+                  <div className="grid md:grid-cols-[1fr_120px_110px_140px_90px] gap-4 px-4 py-2.5 hover:bg-surface-soft transition-colors items-center group">
+                    <a
+                      href={item.webViewLink ?? `https://drive.google.com/file/d/${item.id}/view`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="min-w-0"
+                    >
+                      <Row
+                        icon={<FileTypeIcon mimeType={item.mimeType} />}
+                        name={item.name}
+                        external
+                      />
+                    </a>
                     <span className="hidden md:block text-body-sm text-muted">
                       {fileTypeLabel(item.mimeType)}
                     </span>
                     <span className="hidden md:block text-body-sm text-muted-soft tabular">
                       {formatDate(item.modifiedTime)}
                     </span>
+                    <ProcessCell
+                      processed={processedMap.get(item.id)}
+                      mimeType={item.mimeType}
+                      onProcess={() => processMutation.mutate(item)}
+                      pending={processMutation.isPending && processMutation.variables?.id === item.id}
+                    />
                     <span className="hidden md:block text-body-sm text-muted-soft text-right tabular">
                       {item.size ? formatSize(item.size) : '—'}
                     </span>
-                  </a>
+                  </div>
                 )}
               </li>
             ))}
@@ -276,4 +342,86 @@ function formatSize(bytes: string): string {
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)}KB`
   if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)}MB`
   return `${(n / 1024 / 1024 / 1024).toFixed(1)}GB`
+}
+
+// 텍스트 추출 가능 mime — 그 외는 "처리" 버튼 숨김 (이미지/비디오 등).
+const PROCESSABLE_MIMES = new Set([
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
+  'application/vnd.google-apps.document',
+  'application/vnd.google-apps.spreadsheet',
+  'application/vnd.google-apps.presentation',
+  'text/plain',
+  'text/markdown',
+  'text/csv',
+  'application/x-hwp',
+  'application/haansofthwp',
+])
+
+function ProcessCell({
+  processed,
+  mimeType,
+  onProcess,
+  pending,
+}: {
+  processed: ProcessedFile | undefined
+  mimeType: string
+  onProcess: () => void
+  pending: boolean
+}) {
+  // 처리 가능한 mime 가 아니면 표시 안 함
+  if (!PROCESSABLE_MIMES.has(mimeType)) {
+    return <span className="hidden md:block text-caption text-muted-soft">—</span>
+  }
+
+  if (pending) {
+    return (
+      <span className="hidden md:inline-flex items-center gap-1.5 text-caption text-muted">
+        <Loader2 className="w-3 h-3 animate-spin" />
+        처리 중
+      </span>
+    )
+  }
+
+  // 이미 처리됨 — 에러였는지, 성공이었는지
+  if (processed?.parsing_completed_at) {
+    if (processed.parsing_error) {
+      return (
+        <button
+          type="button"
+          onClick={onProcess}
+          title={processed.parsing_error}
+          className="hidden md:inline-flex items-center gap-1.5 text-caption text-muted hover:text-ink transition-colors"
+        >
+          <AlertCircle className="w-3 h-3" />
+          실패 · 재시도
+        </button>
+      )
+    }
+    return (
+      <button
+        type="button"
+        onClick={onProcess}
+        title="다시 처리 (새 결과로 덮어쓰기)"
+        className="hidden md:inline-flex items-center gap-1.5 text-caption text-ink hover:opacity-70 transition-opacity"
+      >
+        <CheckCircle2 className="w-3 h-3" />
+        Atom {processed.atom_count}
+      </button>
+    )
+  }
+
+  // 아직 처리 안 됨
+  return (
+    <button
+      type="button"
+      onClick={onProcess}
+      className="hidden md:inline-flex items-center gap-1.5 text-caption text-muted border border-hairline rounded-full px-2.5 py-1 hover:text-ink hover:border-muted transition-colors"
+    >
+      <Sparkles className="w-3 h-3" />
+      처리
+    </button>
+  )
 }
