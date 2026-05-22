@@ -222,11 +222,15 @@ export function WorkspaceClient({ userEmail }: { userEmail: string | null }) {
   })()
 
   // chat-history 캐시를 헤더에서도 구독 — overflow menu 가 내보내기/지우기 표시 여부 판단.
-  // ChatPanel 과 같은 queryKey 라 dedupe.
+  // ChatPanel 과 같은 queryKey 로 dedupe (네트워크 호출은 1회). queryFn 은 필수라 같이 정의.
   const chatHistory = useQuery({
     queryKey: ['chat-history'],
-    enabled: false, // ChatPanel 이 실제 fetch. 헤더는 캐시 구독만.
-  }) as { data?: { rows: unknown[] } }
+    queryFn: async (): Promise<{ rows: unknown[] }> => {
+      const res = await fetch('/api/chat')
+      if (!res.ok) throw new Error('대화 기록 조회 실패')
+      return res.json()
+    },
+  })
   const chatRowCount = chatHistory.data?.rows.length ?? 0
 
   const menuItems: MenuItem[] = [
