@@ -3,8 +3,10 @@
 --       Chat 의 search_file_contents tool 이 이 테이블 vector similarity 로 본문 검색.
 --       기존 extracted_atoms (의미 indices) 와 보완 — atom 은 빠른 분류, chunks 는 본문 인용용.
 
--- pgvector extension — Supabase 는 superuser SQL 허용. 권한 거부 시 Dashboard 에서 수동 enable.
-create extension if not exists vector;
+-- pgvector extension — Supabase 는 extensions schema 에 install. 이미 enable 돼 있으면 skip.
+-- 의도: type/operator class 는 schema-qualified (extensions.vector, extensions.vector_cosine_ops)
+--       로 명시. Supabase 의 search_path 에 extensions 가 없으므로 unqualified 시 not found.
+create extension if not exists vector with schema extensions;
 
 -- chunk 단위 저장. embedding 차원 768 = Google text-embedding-005.
 create table if not exists file_chunks (
@@ -15,7 +17,7 @@ create table if not exists file_chunks (
   chunk_index integer not null,
   content text not null,
   -- embedding 은 nullable — 생성 실패해도 row 는 살림 (atom 만 있어도 chat 일부 가능).
-  embedding vector(768),
+  embedding extensions.vector(768),
   token_count integer,
   created_at timestamptz not null default now(),
   unique (processed_file_id, chunk_index)
@@ -25,7 +27,7 @@ create index if not exists file_chunks_file_idx on file_chunks (processed_file_i
 -- HNSW 인덱스 — 100K+ rows 빠른 ANN 검색. 작은 데이터엔 sequential scan 도 OK.
 -- vector_cosine_ops = cosine distance (text-embedding 표준).
 create index if not exists file_chunks_embedding_idx on file_chunks
-  using hnsw (embedding vector_cosine_ops);
+  using hnsw (embedding extensions.vector_cosine_ops);
 
 -- RLS — workspaces.owner_id 기반 격리. processed_files / extracted_atoms 와 동일 패턴.
 alter table file_chunks enable row level security;
@@ -37,8 +39,10 @@ create policy file_chunks_owner on file_chunks for all
 -- Vector search RPC. <=> = cosine distance (값이 작을수록 의미적으로 가까움).
 -- similarity = 1 - distance → 1 에 가까울수록 유사.
 -- folder_id_filter 가 null 이면 전체 workspace 검색, 값 있으면 그 폴더만.
+-- search_path 에 extensions 추가 — <=> operator (extensions schema 의 vector 전용) resolve 위해.
+-- Supabase 의 함수는 기본적으로 public 만 search → extension 의 operator 못 찾음.
 create or replace function search_file_chunks(
-  query_embedding vector(768),
+  query_embedding extensions.vector(768),
   workspace_id_filter uuid,
   folder_id_filter uuid default null,
   match_count int default 10
@@ -49,7 +53,9 @@ create or replace function search_file_chunks(
   chunk_index int,
   content text,
   similarity float
-) language sql stable as $$
+) language sql stable
+set search_path = public, extensions
+as $$
   select
     fc.id, fc.processed_file_id, pf.filename, fc.chunk_index, fc.content,
     1 - (fc.embedding <=> query_embedding) as similarity
