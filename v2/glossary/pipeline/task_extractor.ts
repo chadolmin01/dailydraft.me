@@ -95,18 +95,31 @@ const EXTRACTION_INSTRUCTIONS = `
 서버가 자동 채우는 것 (출력 금지): id prefix 외 메타, attributes, confidence, provenance wrapper, location, file_id, extracted_by, timestamp.
 
 핵심 규칙:
-- 모든 atom 은 r (raw_text) 필수. 원문에 정확히 포함된 60자 이내 fragment.
-- 같은 문장의 여러 Metric (예: "부산 2건, 광주 2건, 대전 1건") 은 각각 분리.
+- 모든 atom 은 r (raw_text) 필수. 원문에 정확히 포함된 80자 이내 fragment. **의역/요약 금지** — 원문 글자 그대로 복사.
+- **한 문장의 여러 제약/항목은 모두 분리**. 예: "15명 이상, 3개 단과대 이상, 학번 2/3 이하" → Constraint 3개. "부산 2건, 광주 2건, 대전 1건" → Metric 3개. 통합 atom 금지.
 - 추론 금지 — 본문에 없는 정보 생성 X.
 - Atom id prefix: R(Requirement), D(Deadline), E(Entity), M(Metric), C(Constraint), Q(Question), DL(Deliverable), N(Narrative), Ev(Event), Dc(Decision), Rf(Reference), Df(Definition).
 - 응답은 ONLY valid JSON. 마크다운 코드블록 (\`\`\`json) 사용 금지.
 
-타입별 추출 가이드 (자주 누락되는 패턴):
+**RelationType 10개 — 이 10개만 사용. 절대 변형/추가 금지:**
+\`requires\`, \`fulfills\`, \`references\`, \`assigned_to\`, \`produced_by\`, \`temporally_after\`, \`responds_to\`, \`triggers\`, \`approves\`, \`evolves_to\`
+- "produces" / "produced" / "creates" / "depends_on" 등은 잘못된 이름. 가장 가까운 위 10개 중 하나로 치환할 것 (예: produces → produced_by 반대 방향).
+- relation type 잘못 쓰면 서버에서 reject 됨.
+
+타입별 추출 가이드 (자주 누락/혼동 패턴):
 - Requirement: 과거형 "X를 했습니다" 뿐 아니라 미래/계획형도 포함. "다음 주차에 X 할 예정", "Y 까지 Z 준비하겠습니다", "A 를 진행할 계획" 같은 표현 = 명시적 작업이면 Requirement.
-- Entity: 사람만 아님. 팀 (예: "3팀") 도 entity_kind="team", 조직/회사/사업단 (예: "창교", "LINC 사업단") 도 entity_kind="organization". 문서 본문에 한 번이라도 주체로 언급되면 추출.
+- Entity: 사람만 아님. 팀 (예: "3팀") 도 Entity, 조직/회사/사업단 (예: "창교", "LINC 사업단") 도 Entity, 동아리 (예: "FLIP") 도 Entity. 문서 본문에 한 번이라도 주체로 언급되면 추출.
 - Deadline: 단순 날짜 언급 + "까지" 조사 = Deadline. due_at 은 YYYY-MM-DD 표준화.
-- Constraint: 형식/수량 제한 (예: "PDF 10페이지 이내", "NRF 표준양식") 은 별도 Constraint, 관련 Requirement 와 references 관계 연결.
-- Question: 불확실하거나 외부 의존 요청 (예: "○○에서 ... 가능할지 문의") = Question. asker_ref / addressee_ref attributes 함께.
+- Constraint: 형식/수량/자격 제한 (예: "PDF 10페이지 이내", "NRF 표준양식", "재적생 3분의 2 이상") 은 Constraint. 관련 Requirement 와 references 관계 연결.
+- Question: 불확실하거나 외부 의존 요청 (예: "○○에서 ... 가능할지 문의") = Question.
+- Definition: 용어/자격을 명시적으로 규정 (예: "정회원은 X 인 자로 한다") = Definition. Constraint 와 구분 — Definition 은 "정의", Constraint 는 "제한".
+- Reference: 외부 문서/조항 인용 (예: "회칙 제6조", "NRF 표준양식 v3") = Reference. 본문 내 다른 atom 참조와 혼동 X.
+
+**표/명단 등 정형 데이터 가이드** (회원명단/예산표/출석부):
+- 각 행 (사람 1명, 항목 1개) = 별도 Entity 또는 Metric. 표 전체를 1개 atom 으로 묶지 말 것.
+- 열 이름 (예: "단과대학", "학과") 자체는 atom 아님 — 행의 값을 atom 의 attribute 또는 content 로.
+- 표 헤더 다음 행부터 추출. 빈 행/구분선 무시.
+- 표 위/아래에 메타 문장 (예: "총 26명", "2026학년도 1학기") 있으면 별도 Metric/Event 로 추출.
 `
 
 export const TASK_EXTRACTOR_VERSION = 'm6-task-extractor-v1.1-multiprovider'
@@ -179,6 +192,10 @@ ${text}`
     client.messages.create({
       model,
       max_tokens: 8192,
+      // 의도: 추출 작업은 창의성 X, 일관성 O. temperature 0.2 로 낮춰서 run-to-run
+      //       variance 감소 (이전 정형 데이터에서 atoms 12~21 ±43% 변동 관찰).
+      //       완전 0 은 deterministic 에 가까운데, 가끔 같은 실수 반복 위험 → 0.2.
+      temperature: 0.2,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     })

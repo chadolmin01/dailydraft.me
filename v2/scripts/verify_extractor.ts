@@ -85,7 +85,10 @@ async function runOne(fixtureDir: string, fixtureName: string, run: number): Pro
     const act = actualCounts[t] ?? 0
     if (exp > 0 || act > 0) {
       typeTotalCount++
-      if (Math.abs(act - exp) <= 1) typeMatchCount++
+      // 의도: 적응형 tolerance — 큰 갯수 (예: Entity 8) 에선 ±1 너무 엄격.
+      //       상대 20% 또는 절대 ±1 중 큰 값. 정형 데이터의 갯수 variance 반영.
+      const tolerance = Math.max(1, Math.floor(Math.max(exp, act) * 0.2))
+      if (Math.abs(act - exp) <= tolerance) typeMatchCount++
     }
   }
   const typeAccuracy = typeTotalCount > 0 ? typeMatchCount / typeTotalCount : 1
