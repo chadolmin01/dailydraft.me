@@ -8,6 +8,7 @@ import { createAdminClient } from '@/src/lib/supabase/admin'
 import { downloadFile } from '@/src/lib/google/drive-download'
 import { parseBuffer } from '@/src/lib/parsers/binary-parser'
 import { extractFromText } from '@/glossary/pipeline/task_extractor'
+import { splitIntoChunks, embedChunks } from '@/src/lib/m6/embedding'
 import type { Json } from '@/src/types/database'
 
 type Admin = ReturnType<typeof createAdminClient>
@@ -29,6 +30,8 @@ export interface ProcessResult {
   status: 'ok' | 'empty' | 'failed'
   atomCount: number
   relationCount: number
+  /** RAG chunk 수 (embedding 성공한 chunk). 0 이면 chat 의 본문 검색 불가, atom 검색만 가능. */
+  chunkCount?: number
   error?: string
 }
 
@@ -127,10 +130,11 @@ export async function processDriveFile(opts: ProcessOptions): Promise<ProcessRes
       if (rErr) throw new Error(`relation insert: ${rErr.message}`)
     }
 
+    const parsedTextSlice = parsed.text.slice(0, 200_000)
     await admin
       .from('processed_files')
       .update({
-        parsed_text: parsed.text.slice(0, 200_000),
+        parsed_text: parsedTextSlice,
         parsing_completed_at: new Date().toISOString(),
         parsing_error: null,
         atom_count: extraction.atoms.length,
@@ -138,11 +142,41 @@ export async function processDriveFile(opts: ProcessOptions): Promise<ProcessRes
       })
       .eq('id', processedFileId)
 
+    // RAG: chunk + embedding 저장.
+    // 의도: chat 의 search_file_contents tool 이 본문 검색하려면 chunk 필요.
+    //       실패해도 atom/parsing 결과는 유지 — chunk 없으면 chat 의 atom 검색만 작동 (degraded).
+    //       Vercel maxDuration 60s 안에서 embedding 호출 1~3초 (50KB 기준) 추가 부담.
+    let chunkCount = 0
+    try {
+      // 기존 chunk 정리 (재처리 시 중복 방지). embedding 새로 생성.
+      await admin.from('file_chunks').delete().eq('processed_file_id', processedFileId)
+      const chunks = splitIntoChunks(parsedTextSlice)
+      if (chunks.length > 0) {
+        const embeddings = await embedChunks(chunks)
+        const chunkRows = chunks.map((content, idx) => ({
+          workspace_id: opts.workspaceId,
+          processed_file_id: processedFileId,
+          chunk_index: idx,
+          content,
+          embedding: embeddings[idx] as unknown as string, // pgvector 컬럼에 array 넘기면 자동 변환
+          token_count: Math.ceil(content.length / 4),
+        }))
+        const { error: cErr } = await admin.from('file_chunks').insert(chunkRows)
+        if (cErr) throw new Error(`chunk insert: ${cErr.message}`)
+        chunkCount = chunks.length
+      }
+    } catch (e) {
+      // chunk 실패는 silent — atom 만 있어도 chat 일부 가능.
+      // eslint-disable-next-line no-console
+      console.error(`[chunk embedding] file ${processedFileId} 실패:`, (e as Error).message)
+    }
+
     return {
       processedFileId,
       status: 'ok',
       atomCount: extraction.atoms.length,
       relationCount: relRows.length,
+      chunkCount,
     }
   } catch (e) {
     const msg = (e as Error).message

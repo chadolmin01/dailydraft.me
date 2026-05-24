@@ -12,8 +12,186 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
+      atom_relations: {
+        Row: {
+          confidence: number
+          created_at: string
+          extracted_by: string
+          from_atom_id: string
+          id: string
+          tenant_id: string
+          to_atom_id: string
+          type: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          extracted_by: string
+          from_atom_id: string
+          id?: string
+          tenant_id: string
+          to_atom_id: string
+          type: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          extracted_by?: string
+          from_atom_id?: string
+          id?: string
+          tenant_id?: string
+          to_atom_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atom_relations_from_atom_id_fkey"
+            columns: ["from_atom_id"]
+            isOneToOne: false
+            referencedRelation: "active_atoms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atom_relations_from_atom_id_fkey"
+            columns: ["from_atom_id"]
+            isOneToOne: false
+            referencedRelation: "atoms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atom_relations_from_atom_id_fkey"
+            columns: ["from_atom_id"]
+            isOneToOne: false
+            referencedRelation: "triples"
+            referencedColumns: ["object_id"]
+          },
+          {
+            foreignKeyName: "atom_relations_from_atom_id_fkey"
+            columns: ["from_atom_id"]
+            isOneToOne: false
+            referencedRelation: "triples"
+            referencedColumns: ["subject_id"]
+          },
+          {
+            foreignKeyName: "atom_relations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atom_relations_to_atom_id_fkey"
+            columns: ["to_atom_id"]
+            isOneToOne: false
+            referencedRelation: "active_atoms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atom_relations_to_atom_id_fkey"
+            columns: ["to_atom_id"]
+            isOneToOne: false
+            referencedRelation: "atoms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atom_relations_to_atom_id_fkey"
+            columns: ["to_atom_id"]
+            isOneToOne: false
+            referencedRelation: "triples"
+            referencedColumns: ["object_id"]
+          },
+          {
+            foreignKeyName: "atom_relations_to_atom_id_fkey"
+            columns: ["to_atom_id"]
+            isOneToOne: false
+            referencedRelation: "triples"
+            referencedColumns: ["subject_id"]
+          },
+        ]
+      }
+      atoms: {
+        Row: {
+          attributes: Json
+          confidence: number
+          content: string
+          created_at: string
+          id: string
+          provenance: Json
+          series_atom_id: string | null
+          status: string
+          tenant_id: string
+          type: string
+          updated_at: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          attributes?: Json
+          confidence: number
+          content: string
+          created_at?: string
+          id?: string
+          provenance: Json
+          series_atom_id?: string | null
+          status?: string
+          tenant_id: string
+          type: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          attributes?: Json
+          confidence?: number
+          content?: string
+          created_at?: string
+          id?: string
+          provenance?: Json
+          series_atom_id?: string | null
+          status?: string
+          tenant_id?: string
+          type?: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atoms_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chats: {
         Row: {
           content: Json
@@ -55,6 +233,268 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      extracted_atoms: {
+        Row: {
+          attributes: Json
+          confidence: number
+          content: string
+          created_at: string
+          id: string
+          local_id: string
+          processed_file_id: string
+          provenance: Json
+          type: string
+          workspace_id: string
+        }
+        Insert: {
+          attributes?: Json
+          confidence: number
+          content: string
+          created_at?: string
+          id?: string
+          local_id: string
+          processed_file_id: string
+          provenance: Json
+          type: string
+          workspace_id: string
+        }
+        Update: {
+          attributes?: Json
+          confidence?: number
+          content?: string
+          created_at?: string
+          id?: string
+          local_id?: string
+          processed_file_id?: string
+          provenance?: Json
+          type?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extracted_atoms_processed_file_id_fkey"
+            columns: ["processed_file_id"]
+            isOneToOne: false
+            referencedRelation: "processed_files"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extracted_atoms_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      extracted_relations: {
+        Row: {
+          confidence: number
+          created_at: string
+          from_atom_id: string
+          id: string
+          processed_file_id: string
+          to_atom_id: string
+          type: string
+          workspace_id: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          from_atom_id: string
+          id?: string
+          processed_file_id: string
+          to_atom_id: string
+          type: string
+          workspace_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          from_atom_id?: string
+          id?: string
+          processed_file_id?: string
+          to_atom_id?: string
+          type?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extracted_relations_from_atom_id_fkey"
+            columns: ["from_atom_id"]
+            isOneToOne: false
+            referencedRelation: "extracted_atoms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extracted_relations_processed_file_id_fkey"
+            columns: ["processed_file_id"]
+            isOneToOne: false
+            referencedRelation: "processed_files"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extracted_relations_to_atom_id_fkey"
+            columns: ["to_atom_id"]
+            isOneToOne: false
+            referencedRelation: "extracted_atoms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "extracted_relations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      file_chunks: {
+        Row: {
+          chunk_index: number
+          content: string
+          created_at: string
+          embedding: string | null
+          id: string
+          processed_file_id: string
+          token_count: number | null
+          workspace_id: string
+        }
+        Insert: {
+          chunk_index: number
+          content: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          processed_file_id: string
+          token_count?: number | null
+          workspace_id: string
+        }
+        Update: {
+          chunk_index?: number
+          content?: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          processed_file_id?: string
+          token_count?: number | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_chunks_processed_file_id_fkey"
+            columns: ["processed_file_id"]
+            isOneToOne: false
+            referencedRelation: "processed_files"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "file_chunks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      file_series: {
+        Row: {
+          created_at: string
+          detected_by: string
+          id: string
+          series_name: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          detected_by: string
+          id?: string
+          series_name: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          detected_by?: string
+          id?: string
+          series_name?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "file_series_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      files: {
+        Row: {
+          category: string | null
+          filename: string
+          id: string
+          mime_type: string
+          parsed_metadata: Json | null
+          parsed_text: string | null
+          parsing_completed_at: string | null
+          series_id: string | null
+          series_position: number | null
+          size_bytes: number
+          storage_url: string
+          tenant_id: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          category?: string | null
+          filename: string
+          id?: string
+          mime_type: string
+          parsed_metadata?: Json | null
+          parsed_text?: string | null
+          parsing_completed_at?: string | null
+          series_id?: string | null
+          series_position?: number | null
+          size_bytes: number
+          storage_url: string
+          tenant_id: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          category?: string | null
+          filename?: string
+          id?: string
+          mime_type?: string
+          parsed_metadata?: Json | null
+          parsed_text?: string | null
+          parsing_completed_at?: string | null
+          series_id?: string | null
+          series_position?: number | null
+          size_bytes?: number
+          storage_url?: string
+          tenant_id?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "files_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "file_series"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "files_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -139,29 +579,97 @@ export type Database = {
         }
         Relationships: []
       }
-      workspaces: {
+      output_rules: {
         Row: {
+          code_module: string | null
           created_at: string
+          description: string
           id: string
           name: string
-          owner_id: string
-          updated_at: string
+          prompt_template: string | null
+          tenant_id: string
+          version: number
+          yaml_definition: string
         }
         Insert: {
+          code_module?: string | null
           created_at?: string
+          description: string
           id?: string
           name: string
-          owner_id: string
-          updated_at?: string
+          prompt_template?: string | null
+          tenant_id: string
+          version?: number
+          yaml_definition: string
         }
         Update: {
+          code_module?: string | null
           created_at?: string
+          description?: string
           id?: string
           name?: string
-          owner_id?: string
-          updated_at?: string
+          prompt_template?: string | null
+          tenant_id?: string
+          version?: number
+          yaml_definition?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "output_rules_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outputs: {
+        Row: {
+          citations: Json
+          composed_at: string
+          composed_by: string
+          content: string
+          id: string
+          rule_id: string
+          rule_version: number
+          tenant_id: string
+        }
+        Insert: {
+          citations?: Json
+          composed_at?: string
+          composed_by: string
+          content: string
+          id?: string
+          rule_id: string
+          rule_version: number
+          tenant_id: string
+        }
+        Update: {
+          citations?: Json
+          composed_at?: string
+          composed_by?: string
+          content?: string
+          id?: string
+          rule_id?: string
+          rule_version?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outputs_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "output_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outputs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       processed_files: {
         Row: {
@@ -215,44 +723,38 @@ export type Database = {
           updated_at?: string
           workspace_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "processed_files_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "processed_files_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      extracted_atoms: {
+      schema_version: {
         Row: {
-          attributes: Json
-          confidence: number
-          content: string
-          created_at: string
-          id: string
-          local_id: string
-          processed_file_id: string
-          provenance: Json
-          type: string
-          workspace_id: string
+          applied_at: string
+          glossary_version: string
+          version: string
         }
         Insert: {
-          attributes?: Json
-          confidence: number
-          content: string
-          created_at?: string
-          id?: string
-          local_id: string
-          processed_file_id: string
-          provenance: Json
-          type: string
-          workspace_id: string
+          applied_at?: string
+          glossary_version: string
+          version: string
         }
         Update: {
-          attributes?: Json
-          confidence?: number
-          content?: string
-          created_at?: string
-          id?: string
-          local_id?: string
-          processed_file_id?: string
-          provenance?: Json
-          type?: string
-          workspace_id?: string
+          applied_at?: string
+          glossary_version?: string
+          version?: string
         }
         Relationships: []
       }
@@ -296,47 +798,165 @@ export type Database = {
           updated_at?: string
           workspace_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      extracted_relations: {
+      tenants: {
         Row: {
-          confidence: number
           created_at: string
-          from_atom_id: string
           id: string
-          processed_file_id: string
-          to_atom_id: string
-          type: string
-          workspace_id: string
+          name: string
         }
         Insert: {
-          confidence: number
           created_at?: string
-          from_atom_id: string
           id?: string
-          processed_file_id: string
-          to_atom_id: string
-          type: string
-          workspace_id: string
+          name: string
         }
         Update: {
-          confidence?: number
           created_at?: string
-          from_atom_id?: string
           id?: string
-          processed_file_id?: string
-          to_atom_id?: string
-          type?: string
-          workspace_id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
     }
     Views: {
-      [_ in never]: never
+      active_atoms: {
+        Row: {
+          attributes: Json | null
+          confidence: number | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          provenance: Json | null
+          series_atom_id: string | null
+          status: string | null
+          tenant_id: string | null
+          type: string | null
+          updated_at: string | null
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          attributes?: Json | null
+          confidence?: number | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          provenance?: Json | null
+          series_atom_id?: string | null
+          status?: string | null
+          tenant_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          attributes?: Json | null
+          confidence?: number | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          provenance?: Json | null
+          series_atom_id?: string | null
+          status?: string | null
+          tenant_id?: string | null
+          type?: string | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atoms_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      triples: {
+        Row: {
+          object_content: string | null
+          object_id: string | null
+          object_type: string | null
+          predicate: string | null
+          relation_confidence: number | null
+          relation_id: string | null
+          subject_content: string | null
+          subject_id: string | null
+          subject_type: string | null
+          tenant_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atom_relations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      current_tenant_id: { Args: never; Returns: string }
+      search_file_chunks: {
+        Args: {
+          folder_id_filter?: string
+          match_count?: number
+          query_embedding: string
+          workspace_id_filter: string
+        }
+        Returns: {
+          chunk_id: string
+          chunk_index: number
+          content: string
+          filename: string
+          processed_file_id: string
+          similarity: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
@@ -465,6 +1085,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
