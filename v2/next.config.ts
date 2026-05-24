@@ -1,7 +1,9 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 // V2 next.config — PWA / V1 의 이미지 호스트들은 제거.
 // V2 는 OAuth 가 Google 만, 외부 이미지 표시 X (필요 시 lh3.googleusercontent.com 만).
+// Sentry: SENTRY_DSN 환경변수 없으면 init() 가 silent no-op → 빌드/런타임 영향 0.
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -55,4 +57,16 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+// Sentry 옵션: SENTRY_ORG/SENTRY_PROJECT/SENTRY_AUTH_TOKEN 없으면 source map upload 안 함.
+// 즉 DSN 만 등록해도 에러 추적은 동작 (스택트레이스만 minified). production 디버깅
+// 필요 시 Sentry 대시보드에서 org/project 생성 후 auth token 환경변수 추가.
+const sentryOptions = {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: !process.env.SENTRY_AUTH_TOKEN,
+  // 의도: Sentry 의 next 인스트루멘테이션이 일부 라우트에서 무거울 수 있음 — 필요 시 disable.
+  disableLogger: true,
+  automaticVercelMonitors: false,
+}
+
+export default withSentryConfig(nextConfig, sentryOptions)

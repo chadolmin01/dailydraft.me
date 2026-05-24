@@ -364,30 +364,65 @@ ${text}`
   }
 
   // 4중 방어선 #3: raw_text grounding (hallucination check).
-  // 의도: markdown bold/italic/heading 부호는 normalize 후 비교.
-  // 마크다운으로 둘러싸인 텍스트라도 의미 단위가 원문에 있으면 grounded 로 인정.
+  // 의도: 출력 토큰 컷 후 LLM 이 raw_text 를 짧게 자르라 했더니 의역하는 경향 생김
+  //       (예: "서울 거주자 대비" 같은 중간 구문 누락). exact substring 매칭은
+  //       의역도 hallucination 으로 오판 → fuzzy 매칭으로 완화.
+  //       방식: 5-gram (5글자 substring) overlap 비율 ≥ 0.6 이면 grounded.
+  //         · 의역: 토큰 60%+ 유지 = 통과
+  //         · 진짜 hallucination: 5-gram overlap 거의 0 = 차단
+  //       전체 grounded 판정: atom 의 90% 이상 통과 시 true (1개 의역도 false 인 all-or-nothing 회피).
   const normalize = (s: string) =>
     s
       .replace(/[*_`#~]/g, '')      // markdown 부호 제거
       .replace(/\s+/g, ' ')         // 공백 정규화
       .trim()
+  const GROUNDING_NGRAM = 5
+  const GROUNDING_TOKEN_THRESHOLD = 0.6
+  const GROUNDING_OVERALL_THRESHOLD = 0.9
+  const ngramSet = (s: string, n: number): Set<string> => {
+    const set = new Set<string>()
+    for (let i = 0; i <= s.length - n; i++) set.add(s.slice(i, i + n))
+    return set
+  }
   const normText = normalize(text)
+  const sourceNgrams = ngramSet(normText, GROUNDING_NGRAM)
   let groundedCount = 0
   for (const atom of atoms) {
     const normRaw = normalize(atom.provenance.source.raw_text)
+    // Fast path: exact substring 매칭
     if (normText.includes(normRaw)) {
       groundedCount++
+      continue
+    }
+    // 너무 짧으면 fuzzy 불가 — exact 실패 시 fail
+    if (normRaw.length < GROUNDING_NGRAM) {
+      issues.push(`atom ${atom.id}: raw_text "${atom.provenance.source.raw_text.slice(0, 40)}" not in source (length < ${GROUNDING_NGRAM})`)
+      continue
+    }
+    // Fuzzy: n-gram overlap 비율
+    const rawNgrams = ngramSet(normRaw, GROUNDING_NGRAM)
+    let hit = 0
+    for (const g of rawNgrams) if (sourceNgrams.has(g)) hit++
+    const ratio = rawNgrams.size > 0 ? hit / rawNgrams.size : 0
+    if (ratio >= GROUNDING_TOKEN_THRESHOLD) {
+      groundedCount++
     } else {
-      issues.push(`atom ${atom.id}: raw_text "${atom.provenance.source.raw_text.slice(0, 40)}..." not in source`)
+      issues.push(`atom ${atom.id}: raw_text "${atom.provenance.source.raw_text.slice(0, 40)}" fuzzy ${ratio.toFixed(2)} < ${GROUNDING_TOKEN_THRESHOLD}`)
     }
   }
-  const grounded = atoms.length > 0 ? groundedCount === atoms.length : true
+  const groundedRatio = atoms.length > 0 ? groundedCount / atoms.length : 1
+  const grounded = groundedRatio >= GROUNDING_OVERALL_THRESHOLD
+
+  // schema_compliant: grounding 관련 issue 는 schema 위반 아님 — 별도 필터.
+  // grounding 관련 메시지 패턴: "not in source", "fuzzy X.XX < ..."
+  const GROUNDING_ISSUE_PATTERNS = ['not in source', 'fuzzy']
+  const schemaIssues = issues.filter(i => !GROUNDING_ISSUE_PATTERNS.some(p => i.includes(p)))
 
   return {
     atoms,
     relations,
     validation: {
-      schema_compliant: issues.filter(i => !i.includes('not in source')).length === 0,
+      schema_compliant: schemaIssues.length === 0,
       grounded,
       issues,
     },
