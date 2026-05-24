@@ -71,36 +71,35 @@ M6 Glossary v1.1 (locked). If you find yourself wanting to invent a new term, ST
 const EXTRACTION_INSTRUCTIONS = `
 당신의 임무: 주어진 한국어 텍스트에서 Atom 과 Relation 을 추출하세요.
 
-응답 JSON 스키마:
+응답 JSON 스키마 (짧은 키 — 출력 토큰 절감 목적, 절대 풀네임으로 바꾸지 말 것):
 {
-  "atoms": [
-    {
-      "id": "string (R1/D1/E1 등 prefix + 번호)",
-      "type": "12 AtomTypes 중 하나 — EXACT name (PascalCase, English)",
-      "content": "≤ 500자, 독립적으로 의미 있게",
-      "attributes": { "key": "value 자유 형식" },
-      "provenance": {
-        "source": {
-          "file_id": "주어진 file_id",
-          "location": "section N — 제목 / header / etc",
-          "raw_text": "원문에서 직접 인용한 fragment (글자 그대로)"
-        }
-      },
-      "confidence": 0.0~1.0
-    }
+  "a": [
+    { "i": "R1", "t": "Requirement", "c": "≤ 500자 atom 본문", "r": "원문 발췌 ≤ 80자" }
   ],
-  "relations": [
-    { "from": "atom_id", "to": "atom_id", "type": "10 RelationTypes 중 하나", "confidence": 0.0~1.0 }
+  "r": [
+    { "f": "R1", "t": "D1", "k": "requires" }
   ]
 }
 
+키 매핑 (이 6개만 사용, 다른 키 출력 금지):
+- a = atoms 배열
+- i = atom id (R1/D1/E1 등 prefix + 번호)
+- t = AtomType (12개 중 하나, PascalCase EXACT name)
+- c = content (≤ 500자, 독립적으로 의미)
+- r = raw_text (원문 그대로 발췌, ≤ 80자, 마크다운 부호 제거)
+- r (relations 안의 r) = relations 배열
+- f = from atom id
+- t (relation 안의 t) = to atom id
+- k = RelationType (10개 중 하나)
+
+서버가 자동 채우는 것 (출력 금지): id prefix 외 메타, attributes, confidence, provenance wrapper, location, file_id, extracted_by, timestamp.
+
 핵심 규칙:
-- 모든 Atom 은 Provenance 필수. raw_text 가 원문에 정확히 포함되어야 함 (hallucination 금지).
-- raw_text 는 원문 그대로 — 마크다운 (**, *, # 등) 까지 그대로 복사하지 말고 ASCII 텍스트 일부만 발췌.
+- 모든 atom 은 r (raw_text) 필수. 원문에 정확히 포함된 60자 이내 fragment.
 - 같은 문장의 여러 Metric (예: "부산 2건, 광주 2건, 대전 1건") 은 각각 분리.
-- 명시 안 된 attribute 은 비울 것. 추론으로 채우지 말 것.
-- Atom id 는 prefix 사용: R(Requirement), D(Deadline), E(Entity), M(Metric), C(Constraint), Q(Question), DL(Deliverable), N(Narrative), Ev(Event), Dc(Decision), Rf(Reference), Df(Definition).
-- 응답은 ONLY valid JSON. 마크다운 코드블록 사용 금지.
+- 추론 금지 — 본문에 없는 정보 생성 X.
+- Atom id prefix: R(Requirement), D(Deadline), E(Entity), M(Metric), C(Constraint), Q(Question), DL(Deliverable), N(Narrative), Ev(Event), Dc(Decision), Rf(Reference), Df(Definition).
+- 응답은 ONLY valid JSON. 마크다운 코드블록 (\`\`\`json) 사용 금지.
 
 타입별 추출 가이드 (자주 누락되는 패턴):
 - Requirement: 과거형 "X를 했습니다" 뿐 아니라 미래/계획형도 포함. "다음 주차에 X 할 예정", "Y 까지 Z 준비하겠습니다", "A 를 진행할 계획" 같은 표현 = 명시적 작업이면 Requirement.
@@ -210,6 +209,19 @@ ${text}`
       .filter((b): b is Anthropic.TextBlock => b.type === 'text')
       .map(b => b.text)
       .join('')
+    // 의도: 토큰 사용량 측정 (병목 진단). DRAFT_LOG_USAGE=1 일 때만 출력.
+    if (process.env.DRAFT_LOG_USAGE) {
+      const u = anthropicResp.usage
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify({
+        provider: 'anthropic',
+        model,
+        input_tokens: u.input_tokens,
+        output_tokens: u.output_tokens,
+        cache_creation_input_tokens: (u as { cache_creation_input_tokens?: number }).cache_creation_input_tokens ?? 0,
+        cache_read_input_tokens: (u as { cache_read_input_tokens?: number }).cache_read_input_tokens ?? 0,
+      }, null, 2))
+    }
   } else {
     // Anthropic 막힘 → Gemini fallback. GEMINI_API_KEY 없으면 원래 에러 throw.
     if (!process.env.GEMINI_API_KEY) {
@@ -245,9 +257,34 @@ ${text}`
   }
 
   // JSON 파싱
-  let parsed: { atoms: unknown[]; relations: unknown[] }
+  // 의도: LLM 은 짧은 키 (i/t/c/r, f/t/k) 로 출력 — 출력 토큰 절감.
+  //       파싱 단에서 full schema (id/type/content/raw_text 등) 로 wrap.
+  //       LLM 이 가끔 풀네임으로 응답하는 경우도 대비 (legacy fallback).
+  interface ShortAtom { i?: string; t?: string; c?: string; r?: string }
+  interface ShortRelation { f?: string; t?: string; k?: string }
+  // legacy 호환 — 풀네임으로 응답한 경우 short 로 매핑
+  type LegacyAtom = { id?: string; type?: string; content?: string; provenance?: { source?: { raw_text?: string } } }
+  type LegacyRelation = { from?: string; to?: string; type?: string }
+  function asShortAtom(x: unknown): ShortAtom {
+    const o = x as ShortAtom & LegacyAtom
+    return {
+      i: o.i ?? o.id,
+      t: o.t ?? o.type,
+      c: o.c ?? o.content,
+      r: o.r ?? o.provenance?.source?.raw_text,
+    }
+  }
+  function asShortRelation(x: unknown): ShortRelation {
+    const o = x as ShortRelation & LegacyRelation
+    return {
+      f: o.f ?? o.from,
+      t: o.t ?? o.to,
+      k: o.k ?? o.type,
+    }
+  }
+
+  let parsed: { a?: unknown[]; r?: unknown[]; atoms?: unknown[]; relations?: unknown[] }
   try {
-    // 모델이 가끔 ```json ... ``` 으로 감싸는 케이스 처리
     const cleaned = rawText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
     parsed = JSON.parse(cleaned)
   } catch (e) {
@@ -263,70 +300,69 @@ ${text}`
   const issues: string[] = []
   const atoms: ExtractedAtom[] = []
   const extracted_by = {
-    // actualModel = primary 성공 시 Anthropic, fallback 시 Gemini.
     model: actualModel,
     extractor_version: TASK_EXTRACTOR_VERSION,
     extracted_at: new Date().toISOString(),
   }
+  // 의도: confidence 는 LLM 이 0.95 남발 + 출력 토큰 낭비 → 서버 default.
+  //       향후 grounding 신호 (raw_text 매칭률 등) 로 동적 계산 여지.
+  const DEFAULT_CONFIDENCE = 0.8
 
-  for (const a of parsed.atoms ?? []) {
-    const atom = a as Partial<ExtractedAtom>
-    if (!atom.id || typeof atom.id !== 'string') {
+  const rawAtoms = parsed.a ?? parsed.atoms ?? []
+  for (const a of rawAtoms) {
+    const s = asShortAtom(a)
+    if (!s.i || typeof s.i !== 'string') {
       issues.push(`atom 에 id 없음: ${JSON.stringify(a)}`)
       continue
     }
-    if (!atom.type || !(ATOM_TYPES as readonly string[]).includes(atom.type)) {
-      issues.push(`atom ${atom.id}: invalid type "${atom.type}"`)
+    if (!s.t || !(ATOM_TYPES as readonly string[]).includes(s.t)) {
+      issues.push(`atom ${s.i}: invalid type "${s.t}"`)
       continue
     }
-    if (!atom.content || atom.content.length > 500) {
-      issues.push(`atom ${atom.id}: content 빈/500자 초과`)
+    if (!s.c || s.c.length > 500) {
+      issues.push(`atom ${s.i}: content 빈/500자 초과`)
       continue
     }
-    if (typeof atom.confidence !== 'number' || atom.confidence < 0 || atom.confidence > 1) {
-      issues.push(`atom ${atom.id}: invalid confidence ${atom.confidence}`)
-      continue
-    }
-    if (!atom.provenance?.source?.raw_text) {
-      issues.push(`atom ${atom.id}: provenance.source.raw_text 없음`)
+    if (!s.r) {
+      issues.push(`atom ${s.i}: raw_text 없음`)
       continue
     }
     atoms.push({
-      id: atom.id,
-      type: atom.type as AtomType,
-      content: atom.content,
-      attributes: atom.attributes ?? {},
+      id: s.i,
+      type: s.t as AtomType,
+      content: s.c,
+      attributes: {},
       provenance: {
         source: {
-          file_id: atom.provenance.source.file_id || fileId,
-          location: atom.provenance.source.location || '',
-          raw_text: atom.provenance.source.raw_text,
+          file_id: fileId,
+          location: '',
+          raw_text: s.r,
         },
         extracted_by,
       },
-      confidence: atom.confidence,
+      confidence: DEFAULT_CONFIDENCE,
     })
   }
 
   const relations: ExtractedRelation[] = []
   const atomIds = new Set(atoms.map(a => a.id))
-  for (const r of parsed.relations ?? []) {
-    const rel = r as Partial<ExtractedRelation>
-    if (!rel.from || !rel.to || !rel.type) continue
-    if (!(RELATION_TYPES as readonly string[]).includes(rel.type)) {
-      issues.push(`relation: invalid type "${rel.type}"`)
+  const rawRelations = parsed.r ?? parsed.relations ?? []
+  for (const r of rawRelations) {
+    const s = asShortRelation(r)
+    if (!s.f || !s.t || !s.k) continue
+    if (!(RELATION_TYPES as readonly string[]).includes(s.k)) {
+      issues.push(`relation: invalid type "${s.k}"`)
       continue
     }
-    if (!atomIds.has(rel.from) || !atomIds.has(rel.to)) {
-      issues.push(`relation: from/to atom id 없음 (${rel.from} → ${rel.to})`)
+    if (!atomIds.has(s.f) || !atomIds.has(s.t)) {
+      issues.push(`relation: from/to atom id 없음 (${s.f} → ${s.t})`)
       continue
     }
-    if (typeof rel.confidence !== 'number') continue
     relations.push({
-      from: rel.from,
-      to: rel.to,
-      type: rel.type as RelationType,
-      confidence: rel.confidence,
+      from: s.f,
+      to: s.t,
+      type: s.k as RelationType,
+      confidence: DEFAULT_CONFIDENCE,
     })
   }
 

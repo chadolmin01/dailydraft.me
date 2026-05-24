@@ -44,9 +44,19 @@ async function main() {
   const fileId = expected.$source_file.id as string
 
   console.log(`▶ Extracting from ${expected.$source_file.filename}...`)
+  console.log(`  source text length: ${text.length} chars (대략 ${Math.round(text.length / 2)} 토큰)`)
+
+  // 의도: extractor 가 사용량 로그 출력하도록 env 토글
+  process.env.DRAFT_LOG_USAGE = '1'
+
   const t0 = Date.now()
   const result = await extractFromText(text, fileId)
   const ms = Date.now() - t0
+
+  // 결과 JSON 크기 = 출력 비용 직관 추정
+  const resultJson = JSON.stringify({ atoms: result.atoms, relations: result.relations })
+  console.log(`  output JSON length: ${resultJson.length} chars (대략 ${Math.round(resultJson.length / 2)} 토큰)`)
+  console.log(`  raw_response length: ${result.raw_response?.length ?? 0} chars`)
 
   // expected vs actual atom counts per AtomType
   const expectedCounts = expected.expected_counts as Record<string, number>
