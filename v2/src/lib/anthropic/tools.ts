@@ -17,6 +17,7 @@ import { readRange } from '@/src/lib/google/sheets'
 import { createGmailDraft } from '@/src/lib/google/gmail'
 import { extractAtomsFromFile } from '@/src/lib/m6/extractor'
 import { buildMatrix, parseRosterFromSheet, type FileWithAtoms } from '@/src/lib/matrix'
+import { embedQuery } from '@/src/lib/m6/embedding'
 
 export const TOOL_DEFINITIONS = [
   {
@@ -126,6 +127,19 @@ export const TOOL_DEFINITIONS = [
       required: ['processed_file_id'],
     },
   },
+  {
+    name: 'search_file_contents',
+    description: '파일 본문 내용을 의미 기반으로 검색합니다 (RAG). Atom 으로 답할 수 없는 자유 질문 (요약, 종합, 본문 인용, "왜 X 라고 했지", "각 팀의 결론은") 에 사용. query 가 embedding 으로 변환된 후 cosine similarity 로 file_chunks 검색. 결과: 본문 chunk 텍스트 + 출처 filename + similarity. 매니저에게 답할 때 chunk 들을 종합하고 출처 파일명 인용 필수.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: '검색 의도 (한국어 자연어 OK, 예: "발표자료 핵심 메시지", "디자인 의사결정 근거")' },
+        folder_id: { type: 'string', description: 'Draft folder UUID 로 검색 범위 제한 (선택)' },
+        limit: { type: 'number', description: '최대 chunk 수 (기본 8, 최대 15). 종합 요약엔 8~10 권장.' },
+      },
+      required: ['query'],
+    },
+  },
 ] as const
 
 export interface ToolContext {
@@ -143,6 +157,7 @@ interface ToolInputs {
   compose_email_draft: { to: string[]; subject: string; body: string; cc?: string[] }
   search_extracted_atoms: { type?: string; keyword?: string; folder_id?: string; limit?: number }
   get_file_atoms: { processed_file_id: string }
+  search_file_contents: { query: string; folder_id?: string; limit?: number }
 }
 
 type ToolName = keyof ToolInputs
@@ -171,6 +186,8 @@ export async function executeTool(
       return searchExtractedAtomsTool(ctx, input as ToolInputs['search_extracted_atoms'])
     case 'get_file_atoms':
       return getFileAtomsTool(ctx, input as ToolInputs['get_file_atoms'])
+    case 'search_file_contents':
+      return searchFileContentsTool(ctx, input as ToolInputs['search_file_contents'])
     default:
       throw new Error(`알 수 없는 도구: ${name}`)
   }
@@ -547,5 +564,51 @@ async function getFileAtomsTool(
         location: prov?.source?.location ?? null,
       }
     }),
+  }
+}
+
+// RAG: 본문 의미 검색.
+// 의도: atom (indices) 만으로 답 안 되는 자유 질문 → file_chunks 의 embedding
+//       cosine similarity 로 본문 retrieval. Chat 이 chunk 들을 종합해서 답.
+//       Search RPC 가 workspace_id + folder_id 필터, RLS 가 caller 격리 강제.
+async function searchFileContentsTool(
+  ctx: ToolContext,
+  input: ToolInputs['search_file_contents'],
+) {
+  const { data: workspace } = await ctx.supabase
+    .from('workspaces')
+    .select('id')
+    .eq('owner_id', ctx.userId)
+    .maybeSingle()
+  if (!workspace) return { chunks: [], note: '워크스페이스 없음' }
+
+  let queryEmbedding: number[]
+  try {
+    queryEmbedding = await embedQuery(input.query)
+  } catch (e) {
+    return { chunks: [], error: `embedding 생성 실패: ${(e as Error).message}` }
+  }
+
+  const matchCount = Math.max(1, Math.min(input.limit ?? 8, 15))
+  // RPC 가 1 - cosine_distance (similarity) 반환. RLS 가 workspace 격리.
+  // embedding 은 pgvector type — JSON array string 으로 직렬화해서 전달 (PostgREST 권장).
+  const { data, error } = await ctx.supabase.rpc('search_file_chunks', {
+    query_embedding: JSON.stringify(queryEmbedding) as unknown as string,
+    workspace_id_filter: workspace.id,
+    folder_id_filter: input.folder_id ?? undefined,
+    match_count: matchCount,
+  })
+  if (error) return { chunks: [], error: error.message }
+
+  return {
+    query: input.query,
+    chunks: (data ?? []).map((c) => ({
+      filename: c.filename,
+      chunk_index: c.chunk_index,
+      content: c.content,
+      similarity: Number(c.similarity?.toFixed(3) ?? 0),
+      processed_file_id: c.processed_file_id,
+    })),
+    note: '본문 chunk 결과. 답할 때 출처 filename 명시 필수.',
   }
 }

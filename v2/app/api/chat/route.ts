@@ -27,7 +27,7 @@ const asJson = (v: unknown): Json => v as Json
 // tool_use / tool_result 는 history 에만 저장 (디버깅용).
 
 const MAX_HISTORY = 30          // 너무 길어지면 비용 + 컨텍스트 한도. V1 기준 충분.
-const MAX_TOOL_LOOPS = 6        // 무한 루프 방어
+const MAX_TOOL_LOOPS = 10       // 6 → 10. RAG (search_file_contents) + 추가 atom 조회 여지.
 
 export async function POST(request: NextRequest) {
   const supabase = await createServerSupabaseClient()
