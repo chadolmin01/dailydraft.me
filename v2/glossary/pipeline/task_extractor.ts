@@ -166,9 +166,12 @@ export async function extractFromText(
 
 ${text}`
 
-  // 의도: Anthropic 529 (overloaded) 일시 오류 → 2회 재시도 (2/5s).
-  //       그래도 막히면 Gemini Flash 로 fallback (별도 capacity pool, Anthropic 다운돼도 살아있음).
-  //       4xx (잘못된 요청 등) 는 재시도/fallback 안 함.
+  // 의도: 1차 Anthropic. SDK 가 자동 retry (429/5xx, default max_retries=2) 함 — 우리 별도 retry 루프 없음.
+  //       실패 시 typed exception 으로 분기:
+  //         - AuthenticationError(401)/PermissionDeniedError(403): API 키 문제 → fallback 무의미, throw
+  //         - BadRequestError(400, AUP classifier 거부 포함) / 그 외 retry 소진 후 실패 → Gemini fallback 경유.
+  //       caching 비활성: Haiku 4.5 의 최소 캐시 임계값(4096 토큰) 보다 시스템 프롬프트(~1600) 가 작아서
+  //       cache_control 걸어도 silently 거부됨 → 굳이 두지 않음 (cosmetic 노이즈 제거).
   let rawText: string
   let actualModel = model
 
@@ -176,32 +179,24 @@ ${text}`
     client.messages.create({
       model,
       max_tokens: 8192,
-      system: [
-        {
-          type: 'text',
-          text: systemPrompt,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
+      system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     })
 
-  const backoffs = [2000, 5000]
   let anthropicResp: Awaited<ReturnType<typeof callAnthropic>> | undefined
   let lastError: Error | undefined
-  for (let attempt = 0; attempt <= backoffs.length; attempt++) {
-    try {
-      anthropicResp = await callAnthropic()
-      break
-    } catch (e) {
-      lastError = e as Error
-      const msg = lastError.message
-      const isOverloaded = /overloaded/i.test(msg) || /\b529\b/.test(msg)
-      const isRetryable = isOverloaded || /\b(429|500|502|503|504)\b/.test(msg)
-      if (!isRetryable) throw lastError
-      if (attempt === backoffs.length) break // fallback 으로
-      await new Promise(r => setTimeout(r, backoffs[attempt] + Math.random() * 500))
+  try {
+    anthropicResp = await callAnthropic()
+  } catch (e) {
+    lastError = e as Error
+    // 키/권한 문제는 Gemini 도 못 살림 — 진짜 인프라 장애로 그대로 throw.
+    if (
+      e instanceof Anthropic.AuthenticationError ||
+      e instanceof Anthropic.PermissionDeniedError
+    ) {
+      throw e
     }
+    // 그 외 모든 케이스 (AUP 400 거부, 5xx SDK retry 소진, 네트워크 에러 등) 는 Gemini 시도.
   }
 
   if (anthropicResp) {
@@ -218,15 +213,13 @@ ${text}`
         model,
         input_tokens: u.input_tokens,
         output_tokens: u.output_tokens,
-        cache_creation_input_tokens: (u as { cache_creation_input_tokens?: number }).cache_creation_input_tokens ?? 0,
-        cache_read_input_tokens: (u as { cache_read_input_tokens?: number }).cache_read_input_tokens ?? 0,
       }, null, 2))
     }
   } else {
     // Anthropic 막힘 → Gemini fallback. GEMINI_API_KEY 없으면 원래 에러 throw.
     if (!process.env.GEMINI_API_KEY) {
       throw new Error(
-        `Anthropic API 일시 과부하 (재시도 2회). 잠시 후 다시 시도하거나 GEMINI_API_KEY 를 설정하면 자동 우회합니다. (원본: ${lastError?.message ?? 'unknown'})`,
+        `Anthropic API 실패 + GEMINI_API_KEY 미설정. GEMINI_API_KEY 설정하면 자동 우회합니다. (원본: ${lastError?.message ?? 'unknown'})`,
       )
     }
     try {
@@ -249,6 +242,10 @@ ${text}`
       }
       rawText = candidateText
       actualModel = FALLBACK_MODEL
+      if (process.env.DRAFT_LOG_USAGE) {
+        // eslint-disable-next-line no-console
+        console.log(JSON.stringify({ provider: 'gemini', model: FALLBACK_MODEL, reason: lastError?.message ?? 'unknown' }, null, 2))
+      }
     } catch (e) {
       throw new Error(
         `Anthropic + Gemini 모두 실패. Anthropic: ${lastError?.message ?? '?'} · Gemini: ${(e as Error).message}`,
