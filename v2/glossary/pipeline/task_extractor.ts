@@ -163,6 +163,38 @@ interface ExtractOptions {
   apiKey?: string
 }
 
+// 의도: 입력 통일 (input normalization) — LLM 호출 전 거친 text 의 위험 패턴 진단.
+//       토큰 폭주 / 정형 데이터 variance 의 근본 원인이 "거친 입력" 이라 사전 가드.
+
+// 입력 사이즈 가드 임계값.
+// Haiku 4.5 context 200K 안에 들어가지만, 큰 입력 → 큰 출력 (atom 수 비례) → max_tokens 8192 도달.
+// 50K chars (≈ 12K input tokens) 이상이면 atom 수 ~50 초과 위험 → 잘림.
+const MAX_INPUT_CHARS = 50_000
+
+// 반복 패턴 감지 — 표/명단 자동 인식.
+// 라인의 50% 이상이 같은 column 수 (',' split) 의 CSV row 면 표/명단으로 간주.
+// 검출 시 prompt prefix 로 LLM 에 힌트 (모든 행 atom 화 X, 메타 위주).
+const TABLE_DETECT_MIN_ROWS = 10
+const TABLE_DETECT_RATIO = 0.5
+
+function detectTablePattern(text: string): { isTable: boolean; rowCount: number; cols: number } {
+  const lines = text.split('\n').filter(l => l.trim() !== '')
+  if (lines.length < TABLE_DETECT_MIN_ROWS) return { isTable: false, rowCount: 0, cols: 0 }
+  // 각 라인의 ',' 갯수 분포 → 최빈값
+  const commaCounts = lines.map(l => (l.match(/,/g) ?? []).length)
+  const freq = new Map<number, number>()
+  for (const c of commaCounts) freq.set(c, (freq.get(c) ?? 0) + 1)
+  let topCols = 0, topN = 0
+  for (const [c, n] of freq) {
+    if (c >= 2 && n > topN) { topCols = c; topN = n }
+  }
+  return {
+    isTable: topN / lines.length >= TABLE_DETECT_RATIO,
+    rowCount: topN,
+    cols: topCols + 1,
+  }
+}
+
 export async function extractFromText(
   text: string,
   fileId: string,
@@ -173,11 +205,28 @@ export async function extractFromText(
 
   const systemPrompt = GLOSSARY_SYSTEM + '\n\n---\n\n' + EXTRACTION_INSTRUCTIONS
 
-  const userMessage = `다음 텍스트에서 Atom 과 Relation 을 추출하세요. file_id = "${fileId}".
+  // N6: 입력 사이즈 가드 — 50K char 초과 시 자르고 issues 에 경고.
+  //     완전 reject 대신 truncate — 매니저가 결과 아무것도 못 받는 것보단 부분이라도 받게.
+  const preflightIssues: string[] = []
+  let inputText = text
+  if (text.length > MAX_INPUT_CHARS) {
+    preflightIssues.push(`input truncated: ${text.length} chars → ${MAX_INPUT_CHARS} (뒷부분 처리 안 됨, 큰 파일은 분할 권장)`)
+    inputText = text.slice(0, MAX_INPUT_CHARS)
+  }
 
+  // N5: 반복 패턴 감지 — 표/명단이면 LLM 에 힌트 prefix.
+  //     binary-parser 의 XLSX 단계에서 이미 안내 추가했지만, PDF/DOCX 안의 표나
+  //     CSV 직접 업로드는 여기서 catch.
+  const tableInfo = detectTablePattern(inputText)
+  const tableHint = tableInfo.isTable
+    ? `\n[자동 감지: 이 텍스트는 표/명단 패턴 (${tableInfo.rowCount}행, ${tableInfo.cols}열 추정). 모든 행을 atom 화 X — 메타데이터 (총 행수, 컬럼 종류) + 대표 sample 위주 추출. 정형 데이터의 행은 1개 Metric 이나 대표 Entity 로 압축.]\n`
+    : ''
+
+  const userMessage = `다음 텍스트에서 Atom 과 Relation 을 추출하세요. file_id = "${fileId}".
+${tableHint}
 ---
 
-${text}`
+${inputText}`
 
   // 의도: 1차 Anthropic. SDK 가 자동 retry (429/5xx, default max_retries=2) 함 — 우리 별도 retry 루프 없음.
   //       실패 시 typed exception 으로 분기:
@@ -311,7 +360,11 @@ ${text}`
   }
 
   // 4중 방어선 #2: schema validation
-  const issues: string[] = []
+  // preflightIssues (입력 가드 / 표 감지 메타) 를 issues 시작에 포함 → 운영 로그에서 추적 가능.
+  const issues: string[] = [...preflightIssues]
+  if (tableInfo.isTable) {
+    issues.push(`table pattern detected (${tableInfo.rowCount} rows × ${tableInfo.cols} cols) — LLM hint injected`)
+  }
   const atoms: ExtractedAtom[] = []
   const extracted_by = {
     model: actualModel,
@@ -430,10 +483,11 @@ ${text}`
   const groundedRatio = atoms.length > 0 ? groundedCount / atoms.length : 1
   const grounded = groundedRatio >= GROUNDING_OVERALL_THRESHOLD
 
-  // schema_compliant: grounding 관련 issue 는 schema 위반 아님 — 별도 필터.
-  // grounding 관련 메시지 패턴: "not in source", "fuzzy X.XX < ..."
-  const GROUNDING_ISSUE_PATTERNS = ['not in source', 'fuzzy']
-  const schemaIssues = issues.filter(i => !GROUNDING_ISSUE_PATTERNS.some(p => i.includes(p)))
+  // schema_compliant: grounding/메타 관련 issue 는 schema 위반 아님 — 별도 필터.
+  // - grounding: "not in source", "fuzzy X.XX < ..."
+  // - 입력 메타 (N5/N6): "input truncated", "table pattern detected"
+  const NON_SCHEMA_PATTERNS = ['not in source', 'fuzzy', 'input truncated', 'table pattern detected']
+  const schemaIssues = issues.filter(i => !NON_SCHEMA_PATTERNS.some(p => i.includes(p)))
 
   return {
     atoms,

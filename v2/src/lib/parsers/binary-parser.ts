@@ -65,13 +65,32 @@ async function parseDocx(buffer: Buffer): Promise<ParseResult> {
 }
 
 // ─── XLSX ───
+// 의도: 표/명단을 통째로 CSV 변환하면 LLM 이 모든 행을 entity 로 추출 시도 →
+//       100명 명단 = atom 100+ = 출력 토큰 폭주 = max_tokens 8192 도달.
+//       해결: 큰 표 (30행 초과) 는 헤더 + 처음 25행 sample + "나머지 생략" 안내.
+//       LLM 이 메타데이터 (총 행수, 컬럼) + 대표 sample 만 추출하도록 유도.
 async function parseXlsx(buffer: Buffer): Promise<ParseResult> {
   const XLSX = await import('xlsx')
   const wb = XLSX.read(buffer, { type: 'buffer' })
   const parts: string[] = []
+  const SAMPLE_LIMIT_ROWS = 25
+  const TABLE_THRESHOLD_ROWS = 30
   for (const name of wb.SheetNames) {
-    parts.push(`=== ${name} ===`)
-    parts.push(XLSX.utils.sheet_to_csv(wb.Sheets[name]))
+    parts.push(`=== Sheet: ${name} ===`)
+    const csv = XLSX.utils.sheet_to_csv(wb.Sheets[name])
+    const allLines = csv.split('\n')
+    // 빈 행 (모든 셀이 빈 값) 제외한 실데이터 행 수
+    const nonEmptyLines = allLines.filter(l => l.replace(/,/g, '').trim() !== '')
+    if (nonEmptyLines.length <= TABLE_THRESHOLD_ROWS) {
+      parts.push(csv)
+    } else {
+      // 큰 표 — 헤더+첫 25행 sample + 나머지 생략 안내
+      const sample = allLines.slice(0, SAMPLE_LIMIT_ROWS).join('\n')
+      const remaining = nonEmptyLines.length - SAMPLE_LIMIT_ROWS
+      parts.push(sample)
+      parts.push(`... (총 ${nonEmptyLines.length}행 중 ${remaining}행 생략 — 반복 패턴으로 판단됨)`)
+      parts.push(`[힌트: 이 sheet 는 표/명단 패턴. 모든 행을 entity atom 으로 만들지 말 것. 메타데이터 (총 행수, 컬럼 종류) + 대표 sample 위주로 추출.]`)
+    }
     parts.push('')
   }
   return {
