@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Draft Glossary — 팀원용 시각 가이드</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  .card { background: white; border: 1px solid #E5E7EB; border-radius: 16px; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+  .arrow-down::after { content: "↓"; display: block; text-align: center; color: #9CA3AF; font-size: 28px; margin: 4px 0; }
+  .kbd { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; background: #F3F4F6; padding: 2px 6px; border-radius: 4px; color: #374151; }
+  .grid-12 { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .chip { padding: 6px 12px; border-radius: 999px; background: #EFF6FF; color: #1D4ED8; font-size: 13px; font-weight: 500; display: inline-block; }
+  .step { display: flex; gap: 12px; align-items: flex-start; }
+  .step-num { flex-shrink: 0; width: 24px; height: 24px; border-radius: 999px; background: #1D4ED8; color: white; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { border-bottom: 1px solid #F3F4F6; padding: 10px 12px; text-align: left; vertical-align: top; }
+  th { background: #FAFAFA; font-weight: 600; color: #374151; font-size: 13px; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<div class="max-w-5xl mx-auto px-6 py-10">
+
+  <!-- 표지 -->
+  <header class="mb-12">
+    <p class="text-sm text-gray-500 mb-2">Draft V2 · 팀원용 가이드 · v1.1</p>
+    <h1 class="text-4xl font-bold tracking-tight mb-3">Glossary 한눈에 보기</h1>
+    <p class="text-lg text-gray-600 leading-relaxed">
+      Draft 가 PDF·DOCX·HWP 같은 잡다한 파일을 어떻게 일관된 의미 단위로 정리하는지,
+      그 모든 작업이 어떤 용어로 묶이는지 설명하는 한 페이지짜리 지도.
+    </p>
+  </header>
+
+  <!-- 3분 요약 -->
+  <section class="card p-7 mb-10">
+    <p class="pill bg-blue-50 text-blue-700 mb-4">3분 요약</p>
+    <ol class="space-y-3 text-gray-800 leading-relaxed">
+      <li class="step"><span class="step-num">1</span><span><strong>File</strong> 은 매니저가 Drive 에 올린 원본 파일 (PDF/DOCX/HWP 등).</span></li>
+      <li class="step"><span class="step-num">2</span><span>File 의 본문 텍스트에서 <strong>Atom</strong> (의미 단위 한 조각) 들을 뽑는다. 12 가지 종류 중 하나로 분류됨.</span></li>
+      <li class="step"><span class="step-num">3</span><span>Atom 들 사이를 잇는 <strong>Relation</strong> (관계) 을 붙인다. 10 가지 종류.</span></li>
+      <li class="step"><span class="step-num">4</span><span>모든 Atom 은 <strong>Provenance</strong> (출처) 를 의무로 가진다. 원본 파일 어디서 왔는지 추적 가능.</span></li>
+      <li class="step"><span class="step-num">5</span><span>Atom + Relation = 매니저 워크스페이스의 <strong>knowledge graph</strong>. 챗봇이 이걸 검색해 답한다.</span></li>
+    </ol>
+  </section>
+
+  <!-- 데이터 흐름 -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-5">데이터 흐름</h2>
+    <div class="card p-6">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center text-sm">
+        <div class="bg-gray-100 rounded-xl p-4">
+          <div class="text-xs text-gray-500 mb-1">입력</div>
+          <div class="font-semibold">File</div>
+          <div class="text-xs text-gray-500 mt-1">PDF/DOCX/HWP/XLSX</div>
+        </div>
+        <div class="hidden md:flex items-center justify-center text-gray-400 text-2xl">→</div>
+        <div class="bg-gray-100 rounded-xl p-4">
+          <div class="text-xs text-gray-500 mb-1">파싱</div>
+          <div class="font-semibold">parsed_text</div>
+          <div class="text-xs text-gray-500 mt-1">200KB 까지</div>
+        </div>
+        <div class="hidden md:flex items-center justify-center text-gray-400 text-2xl">→</div>
+        <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+          <div class="text-xs text-blue-700 mb-1">추출</div>
+          <div class="font-semibold text-blue-900">Atom + Relation</div>
+          <div class="text-xs text-blue-700 mt-1">12 type / 10 type</div>
+        </div>
+      </div>
+      <div class="arrow-down mt-3"></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm">
+        <div class="bg-gray-100 rounded-xl p-4">
+          <div class="text-xs text-gray-500 mb-1">DB 저장</div>
+          <div class="font-semibold">extracted_atoms</div>
+          <div class="text-xs text-gray-500 mt-1">의미 단위 인덱스</div>
+        </div>
+        <div class="bg-gray-100 rounded-xl p-4">
+          <div class="text-xs text-gray-500 mb-1">DB 저장 (RAG)</div>
+          <div class="font-semibold">file_chunks</div>
+          <div class="text-xs text-gray-500 mt-1">본문 600자 + embedding</div>
+        </div>
+        <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+          <div class="text-xs text-green-700 mb-1">매니저 사용</div>
+          <div class="font-semibold text-green-900">Chat 답변</div>
+          <div class="text-xs text-green-700 mt-1">atom + 본문 인용</div>
+        </div>
+      </div>
+    </div>
+    <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+      Atom 은 의미 단위의 인덱스 (마감/요구/결정 등 빠른 분류용), file_chunks 는 본문 그 자체
+      (요약·자유 질문 답할 때 인용용). 둘이 보완.
+    </p>
+  </section>
+
+  <!-- 12 AtomType -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-2">12 AtomType — 의미 단위의 12 가지 갈래</h2>
+    <p class="text-sm text-gray-600 mb-5">이름은 EXACT PascalCase 영문. "Req" / "요구사항" 같은 변형 금지 (코드/검색 깨짐).</p>
+    <div class="grid-12">
+
+      <div class="card p-4"><div class="pill bg-red-50 text-red-700 mb-2">Requirement</div>
+        <p class="text-sm text-gray-700 leading-snug">해야 할 일·과업. 과거형/미래형 모두 포함.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "지방 거주자 인터뷰 5건 추가"</p></div>
+
+      <div class="card p-4"><div class="pill bg-red-50 text-red-700 mb-2">Deadline</div>
+        <p class="text-sm text-gray-700 leading-snug">기한·마감일. "~까지" 표현이 명시된 시점.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "2026-03-15 까지 제출"</p></div>
+
+      <div class="card p-4"><div class="pill bg-red-50 text-red-700 mb-2">Constraint</div>
+        <p class="text-sm text-gray-700 leading-snug">제약·자격 요건. 형식/수량/대상 제한.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "PDF 10페이지 이내"</p></div>
+
+      <div class="card p-4"><div class="pill bg-purple-50 text-purple-700 mb-2">Deliverable</div>
+        <p class="text-sm text-gray-700 leading-snug">산출물. 만들어서 제출하는 결과물.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "최종 발표 자료 1부"</p></div>
+
+      <div class="card p-4"><div class="pill bg-purple-50 text-purple-700 mb-2">Metric</div>
+        <p class="text-sm text-gray-700 leading-snug">수치·통계. 단위와 함께 의미 있게.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "참여 학생 87명"</p></div>
+
+      <div class="card p-4"><div class="pill bg-purple-50 text-purple-700 mb-2">Narrative</div>
+        <p class="text-sm text-gray-700 leading-snug">서술·관찰. 패턴이나 분석 한 줄.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "지방 거주자가 모바일 결제 빈도 낮음"</p></div>
+
+      <div class="card p-4"><div class="pill bg-amber-50 text-amber-700 mb-2">Event</div>
+        <p class="text-sm text-gray-700 leading-snug">특정 시점에 발생한 사건/활동.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "3주차 사용성 테스트 진행"</p></div>
+
+      <div class="card p-4"><div class="pill bg-amber-50 text-amber-700 mb-2">Question</div>
+        <p class="text-sm text-gray-700 leading-snug">불확실하거나 외부 답이 필요한 사항.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "창교에 시니어 명단 공유 가능한지 문의"</p></div>
+
+      <div class="card p-4"><div class="pill bg-amber-50 text-amber-700 mb-2">Decision</div>
+        <p class="text-sm text-gray-700 leading-snug">결정·확정 사항. 선택지 중 어느 것.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "결제 UX 는 카카오페이 우선"</p></div>
+
+      <div class="card p-4"><div class="pill bg-gray-100 text-gray-700 mb-2">Reference</div>
+        <p class="text-sm text-gray-700 leading-snug">외부 문서·조항 인용.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "회칙 제6조"</p></div>
+
+      <div class="card p-4"><div class="pill bg-gray-100 text-gray-700 mb-2">Definition</div>
+        <p class="text-sm text-gray-700 leading-snug">용어·자격을 명시적으로 정의한 문장.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "정회원은 학부 재적생인 자"</p></div>
+
+      <div class="card p-4"><div class="pill bg-green-50 text-green-700 mb-2">Entity</div>
+        <p class="text-sm text-gray-700 leading-snug">사람·팀·조직. 주체로 등장하는 것 모두.</p>
+        <p class="text-xs text-gray-500 mt-2">예: "FLIP 3팀", "LINC 사업단"</p></div>
+
+    </div>
+    <p class="text-xs text-gray-500 mt-4">
+      색 묶음: 빨강 = 해야 할 것, 보라 = 만들어내는 것, 노랑 = 발생/결정, 회색 = 인용·정의, 초록 = 주체.
+    </p>
+  </section>
+
+  <!-- 10 RelationType -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-2">10 RelationType — Atom 사이의 관계</h2>
+    <p class="text-sm text-gray-600 mb-5">두 Atom 을 잇는 방향성 있는 화살표. EXACT 이름만 사용.</p>
+    <div class="card overflow-hidden">
+      <table>
+        <thead><tr><th style="width: 180px">관계</th><th>의미</th><th>예시</th></tr></thead>
+        <tbody>
+          <tr><td><span class="kbd">requires</span></td><td>A 가 B 를 필요로 함</td><td>Requirement → Deliverable</td></tr>
+          <tr><td><span class="kbd">fulfills</span></td><td>A 가 B 를 충족·완료함</td><td>Deliverable → Requirement</td></tr>
+          <tr><td><span class="kbd">references</span></td><td>A 가 B 를 참조·인용</td><td>Requirement → Reference</td></tr>
+          <tr><td><span class="kbd">assigned_to</span></td><td>A 가 B 에게 할당됨</td><td>Requirement → Entity</td></tr>
+          <tr><td><span class="kbd">produced_by</span></td><td>A 가 B 에 의해 만들어짐</td><td>Deliverable → Entity</td></tr>
+          <tr><td><span class="kbd">temporally_after</span></td><td>A 가 B 이후에 발생</td><td>Event → Event</td></tr>
+          <tr><td><span class="kbd">responds_to</span></td><td>A 가 B 에 대한 응답</td><td>Decision → Question</td></tr>
+          <tr><td><span class="kbd">triggers</span></td><td>A 가 B 를 촉발</td><td>Event → Requirement</td></tr>
+          <tr><td><span class="kbd">approves</span></td><td>A 가 B 를 승인</td><td>Decision → Deliverable</td></tr>
+          <tr><td><span class="kbd">evolves_to</span></td><td>A 가 B 로 진화·갱신</td><td>Atom → Atom (시계열)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-sm text-gray-600 mt-3">
+      <strong>Triple</strong> = (Atom A, RelationType, Atom B). 지식의 한 조각이 한 줄.
+      예: <span class="kbd">(R1 인터뷰 5건, requires, DL1 시장조사 보고서)</span>
+    </p>
+  </section>
+
+  <!-- Provenance -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-2">Provenance — 출처 추적의 의무</h2>
+    <p class="text-sm text-gray-600 mb-5">Provenance 없는 Atom 은 INVALID. 매니저가 항상 원본을 찾아갈 수 있어야 함.</p>
+    <div class="card p-6">
+      <pre class="text-xs bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto leading-relaxed">{
+  "id": "R1",
+  "type": "Requirement",
+  "content": "지방 거주자 인터뷰 5건 추가",
+  "provenance": {
+    "source": {
+      "file_id": "uuid-of-FLIP_3팀_2주차_보고서.pdf",
+      "location": "section 2 — 진척 현황",
+      "raw_text": "지방 거주자 인터뷰 5건을 추가로 진행"
+    },
+    "extracted_by": {
+      "model": "claude-haiku-4-5-20251001",
+      "extractor_version": "m6-task-extractor-v1.1",
+      "extracted_at": "2026-05-25T12:00:00Z"
+    }
+  },
+  "confidence": 0.8
+}</pre>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5">
+        <div class="bg-blue-50 p-3 rounded-lg">
+          <p class="text-xs text-blue-700 font-semibold mb-1">source.file_id</p>
+          <p class="text-xs text-gray-700">어느 파일에서 왔나</p>
+        </div>
+        <div class="bg-blue-50 p-3 rounded-lg">
+          <p class="text-xs text-blue-700 font-semibold mb-1">source.raw_text</p>
+          <p class="text-xs text-gray-700">원문 어느 문장 (80자 이내 발췌)</p>
+        </div>
+        <div class="bg-blue-50 p-3 rounded-lg">
+          <p class="text-xs text-blue-700 font-semibold mb-1">extracted_by.model</p>
+          <p class="text-xs text-gray-700">어느 모델이 뽑았나 (재현/디버깅용)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 파이프라인 -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-2">파이프라인 6단계</h2>
+    <p class="text-sm text-gray-600 mb-5">파일 1개가 들어와서 Atom + Relation 으로 나오기까지.</p>
+    <div class="space-y-3">
+      <div class="card p-4 flex gap-4 items-start"><div class="step-num mt-1">1</div>
+        <div><p class="font-semibold">Ingestion</p><p class="text-sm text-gray-600">Drive 에서 파일 download → processed_files row 생성.</p></div></div>
+      <div class="card p-4 flex gap-4 items-start"><div class="step-num mt-1">2</div>
+        <div><p class="font-semibold">Parsing</p><p class="text-sm text-gray-600">PDF/DOCX/XLSX/HWP → plain text. parsed_text 컬럼에 200KB 까지 저장.</p></div></div>
+      <div class="card p-4 flex gap-4 items-start"><div class="step-num mt-1">3</div>
+        <div><p class="font-semibold">Classification</p><p class="text-sm text-gray-600">파일을 8 카테고리 (공문/사업계획서/실적보고서/회의록 …) 중 하나로 분류.</p></div></div>
+      <div class="card p-4 flex gap-4 items-start"><div class="step-num mt-1">4</div>
+        <div><p class="font-semibold">Extraction</p><p class="text-sm text-gray-600">LLM (Haiku 4.5, Gemini fallback) 호출 → Atom + Relation 추출. 짧은 JSON 키 (i/t/c/r) 로 출력 토큰 절감.</p></div></div>
+      <div class="card p-4 flex gap-4 items-start"><div class="step-num mt-1">5</div>
+        <div><p class="font-semibold">Linking</p><p class="text-sm text-gray-600">같은 시리즈/주차 파일들의 Atom 끼리 연결 (evolves_to 관계 등).</p></div></div>
+      <div class="card p-4 flex gap-4 items-start"><div class="step-num mt-1">6</div>
+        <div><p class="font-semibold">Validation</p><p class="text-sm text-gray-600">schema_compliant + grounded (5-gram fuzzy 매칭) 검증. 통과한 Atom 만 검색 가능.</p></div></div>
+    </div>
+  </section>
+
+  <!-- RAG -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-2">Chat 가 답하는 방식</h2>
+    <p class="text-sm text-gray-600 mb-5">매니저 질문 유형에 따라 두 도구를 골라 씀.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-6">
+        <p class="pill bg-blue-50 text-blue-700 mb-3">정형 질문</p>
+        <p class="font-semibold mb-2">search_extracted_atoms</p>
+        <p class="text-sm text-gray-700 leading-relaxed mb-3">
+          "마감 알려줘", "결정사항", "수치" 같은 분류 가능 질문.
+          AtomType 으로 필터 + keyword 매칭.
+        </p>
+        <p class="text-xs text-gray-500">빠름, 정확, 토큰 작음.</p>
+      </div>
+      <div class="card p-6">
+        <p class="pill bg-green-50 text-green-700 mb-3">자유 질문 (RAG)</p>
+        <p class="font-semibold mb-2">search_file_contents</p>
+        <p class="text-sm text-gray-700 leading-relaxed mb-3">
+          "요약해줘", "왜 X 라고 했지", "각 팀 결론" 같은 본문 직접 읽기 필요.
+          query 를 embedding 으로 변환 → file_chunks cosine similarity 검색.
+        </p>
+        <p class="text-xs text-gray-500">본문 인용 가능, 출처 파일명 명시 의무.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 금지 용어 -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-2">금지 동의어 — 코드/문서에서 쓰지 말 것</h2>
+    <p class="text-sm text-gray-600 mb-5">한 개념에 한 단어. 동의어 쓰면 검색·타입체크 깨짐.</p>
+    <div class="card p-5">
+      <table>
+        <thead><tr><th>금지</th><th>대신 사용</th></tr></thead>
+        <tbody>
+          <tr><td><span class="kbd line-through">AKU</span></td><td><span class="kbd">Atom</span></td></tr>
+          <tr><td><span class="kbd line-through">Propositioner</span></td><td><span class="kbd">Extractor</span></td></tr>
+          <tr><td><span class="kbd line-through">Document</span></td><td><span class="kbd">File</span> (v1 한정)</td></tr>
+          <tr><td><span class="kbd line-through">DocumentSeries</span></td><td><span class="kbd">FileSeries</span></td></tr>
+          <tr><td><span class="kbd line-through">Chunk</span></td><td><span class="kbd">Atom</span> 또는 <span class="kbd">text_segment</span></td></tr>
+          <tr><td><span class="kbd line-through">KG</span></td><td><span class="kbd">Graph</span></td></tr>
+          <tr><td><span class="kbd line-through">Molecule / Quadruple</span></td><td>v2 예약어. 지금 사용 X</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-gray-500 mt-3">
+      코드에는 <span class="kbd">assertNoForbiddenTerms()</span> 가 런타임에서 잡음.
+      문서에서는 사람이 지킨다.
+    </p>
+  </section>
+
+  <!-- 4 방어선 -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-2">4중 방어선 — Atom 품질 보증</h2>
+    <p class="text-sm text-gray-600 mb-5">LLM 만 믿지 않음. 4 단계 가드.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="card p-4"><p class="font-semibold">① 시스템 프롬프트 (LLM 호출 시)</p><p class="text-sm text-gray-600 mt-1">Glossary v1.1 헤더 주입. AtomType 12개 / RelationType 10개 EXACT 이름 강제.</p></div>
+      <div class="card p-4"><p class="font-semibold">② Schema 검증 (응답 파싱 후)</p><p class="text-sm text-gray-600 mt-1">JSON 키, AtomType 이름, content 길이, raw_text 존재 확인.</p></div>
+      <div class="card p-4"><p class="font-semibold">③ Grounding 검증 (raw_text vs 원문)</p><p class="text-sm text-gray-600 mt-1">5-gram fuzzy 매칭 60% 이상. hallucination 차단.</p></div>
+      <div class="card p-4"><p class="font-semibold">④ 입력 통일 (LLM 호출 전)</p><p class="text-sm text-gray-600 mt-1">50K char 가드, 표/명단 자동 감지 → 모든 행 atom 화 차단.</p></div>
+    </div>
+  </section>
+
+  <footer class="border-t border-gray-200 pt-6 mt-12 text-xs text-gray-500">
+    <p>M6 Glossary v1.1 · Draft V2 · 2026</p>
+    <p class="mt-1">소스: <span class="kbd">v2/glossary/glossary.ts</span> · <span class="kbd">v2/glossary/M6_Glossary_v1.1.md</span></p>
+  </footer>
+
+</div>
+</body>
+</html>

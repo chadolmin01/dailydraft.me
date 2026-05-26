@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# typescript
+*.tsbuildinfo
+
+# SQLite — 로컬 데이터는 commit X (개발 환경마다 별도)
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+
+# editor
+.vscode/
+.idea/
+
+# misc
+.DS_Store
+.env*.local
