@@ -17,6 +17,14 @@ html, body {
 
 * { box-sizing: border-box; }
 
+/* 의도: 보고서 페이지 인쇄 시 nav/사이드 hidden. main 만 출력. */
+@media print {
+  header[class*="border-b"] { display: none !important; }
+  main { padding: 0 !important; max-width: 100% !important; }
+  .print\:hidden { display: none !important; }
+  @page { margin: 12mm; size: A4; }
+}
+
 @layer components {
   .card {
     @apply bg-white border border-hairline rounded-xl;
