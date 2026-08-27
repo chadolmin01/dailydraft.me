@@ -1,0 +1,28 @@
+{
+  "showLineNumber": true,
+  "readableLineLength": true,
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "shortest",
+  "useMarkdownLinks": false,
+  "showUnsupportedFiles": false,
+  "promptDelete": true,
+  "trashOption": "system",
+  "defaultViewMode": "preview",
+  "userIgnoreFilters": [
+    "/node_modules/",
+    "v1/node_modules/",
+    "v2/node_modules/",
+    "v3/node_modules/",
+    "v1/.next/",
+    "v2/.next/",
+    "v3/.next/",
+    "v1/.vercel/",
+    "/.vercel/",
+    "/.git/",
+    "asan-doers-evidence/",
+    "wireframe/",
+    "mirra reference/",
+    "archive/prd/img/",
+    "archive/prd/yc/"
+  ]
+}

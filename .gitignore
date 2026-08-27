@@ -84,3 +84,11 @@ wireframe/
 # 지원서·사업 기밀 (public repo 라 절대 커밋 금지)
 asan-doers-essays.txt
 asan-doers-evidence/
+
+# 의사결정 아카이브/온톨로지 — 미공개 전략문서(PIVOT_STRATEGY.md, 발표대본_FINAL.md 등,
+# 현재 git 미추적) 내용을 인용하고 있어 그대로 커밋하면 public repo에 처음 공개되는 셈이 됨
+DECISION_ARCHIVE.md
+ontology/
+
+# 로컬 전용 Claude 설정 — Supabase PAT 등 비밀값 포함 (2026-08-27)
+.claude/settings.local.json
